@@ -3,12 +3,19 @@
 
     extern struct ast;
     extern struct ast* newnode(char* name, int num, ...);
+    extern int error_type;
 %}
 
 %option yylineno
 
-INT         [1-9]+[0-9]*|0
-FLOAT       [0-9]+\.[0-9]*
+LINECOMMENT  \/\/.*\n
+BLOCKCOMMENT \/\*[^*]*\*+([^\/*][^*]*\*+)*\/
+dec         [1-9][0-9]*|0
+oct         0[1-7][0-7]*
+hex         0x[1-9a-fA-F][0-9a-fA-F]
+flt         [0-9]+\.[0-9]*
+INT         {dec}|{oct}|{hex}
+FLOAT       {flt}|{flt}[eE][-\+]?{dec}
 ID          [a-z_A-Z][a-zA-Z_0-9]*
 SEMI        ;
 COMMA       ,
@@ -61,15 +68,17 @@ ANERROR     .
 {OR}        { yylval.a = newnode("OR", 0); return OR; }
 {DOT}       { yylval.a = newnode("DOT", 0); return DOT; }
 {NOT}       { yylval.a = newnode("NOT", 0); return NOT; }
-{EOL}       { }
-{SPACE}     { }
+{LINECOMMENT}   { }
+{BLOCKCOMMENT}  { }
+{EOL}           { }
+{SPACE}         { }
 {LP}        { yylval.a = newnode("LP", 0); return LP; }
 {RP}        { yylval.a = newnode("RP", 0); return RP; }
 {LB}        { yylval.a = newnode("LB", 0); return LB; }
 {RB}        { yylval.a = newnode("RB", 0); return RB; }
 {LC}        { yylval.a = newnode("LC", 0); return LC; }
 {RC}        { yylval.a = newnode("RC", 0); return RC; }
-{ANERROR}   { printf("At Line %d: Mysterious character \'%s\'\n", yylineno, yytext); }
+{ANERROR}   { error_type = 1; yyerror(yytext); }
 
 %%
 

@@ -1,5 +1,6 @@
 %{
     #include <stdio.h>
+    extern struct ast* root;
     extern struct ast* newnode(char* name, int num, ...);
 %}
 
@@ -40,7 +41,7 @@ DefList Def DecList Dec Exp Args
 
 /* high-level definitions*/
 
-Program : ExtDefList { $$=newnode("Program", 1, $1); eval($$,0); printf("fuckme\n"); }
+Program : ExtDefList { root=newnode("Program", 1, $1); $$=root;}
     ;
 ExtDefList : ExtDef ExtDefList      { $$=newnode("ExtDefList", 2, $1, $2); }
     | /* empty */                   { $$=newnode("ExtDefList", -1); }
@@ -81,7 +82,6 @@ ParamDec : Specifier VarDec         { $$=newnode("ParamDec", 2, $1, $2); }
 
 /* statements */
 CompSt : LC DefList StmtList RC     { $$=newnode("CompSt", 4, $1, $2, $3, $4); }
-    | error RC
     ;
 StmtList : Stmt StmtList            { $$=newnode("StmtList", 2, $1, $2); }
     | /* empty */                   { $$=newnode("StmtList", -1); }
@@ -92,7 +92,7 @@ Stmt : Exp SEMI                                 { $$=newnode("Stmt", 2, $1, $2);
     | IF LP Exp RP Stmt %prec LOWER_THAN_ELSE   { $$=newnode("Stmt", 5, $1, $2, $3, $4, $5); }
     | IF LP Exp RP Stmt ELSE Stmt               { $$=newnode("Stmt", 7, $1, $2, $3, $4, $5, $6, $7); }
     | WHILE LP Exp RP Stmt                      { $$=newnode("Stmt", 5, $1, $2, $3, $4, $5); }
-    | error SEMI
+    | error SEMI                                { }
     ;
 
 /* local definitions */
@@ -133,5 +133,7 @@ Exp : Exp ASSIGNOP Exp  { $$=newnode("Exp", 3, $1, $2, $3); }
 Args : Exp COMMA Args   { $$=newnode("Args", 3, $1, $2, $3); }
     | Exp               { $$=newnode("Args", 1, $1); }
     ;
+
+
 
 %%
