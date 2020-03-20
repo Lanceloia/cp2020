@@ -32,7 +32,7 @@ syntax-c: $(YFILE)
 -include $(patsubst %.o, %.d, $(OBJS))
 
 # 定义的一些伪目标
-.PHONY: clean test mytest
+.PHONY: clean test
 test:
 	./parser ../Test/test1.cmm
 
@@ -41,18 +41,3 @@ clean:
 	rm -f $(OBJS) $(OBJS:.o=.d)
 	rm -f $(LFC) $(YFC) $(YFC:.c=.h)
 	rm -f *~
-	
-mytest:
-	./parser ./t1.cmm
-	./parser ./t2.cmm
-	./parser ./t3.cmm
-	./parser ./t4.cmm
-
-mytest2:
-	./parser ./tt1.cmm
-	./parser ./tt2.cmm
-	./parser ./tt3.cmm
-	./parser ./tt4.cmm
-	./parser ./tt5.cmm
-	./parser ./tt6.cmm
-	
