@@ -21,14 +21,21 @@ int main(int argc, char** argv) {
 }
 
 void yyerror(char* msg) {
-  if (error_type == 1)
-    printf("Error type A at Line %d: Mysterious character \'%s\'\n", yylineno,
-           msg);
-  else
-    printf("Error type B at Line %d: %s\n", yylineno, msg);
+  switch (error_type) {
+    case 1:
+      printf("Error type A at Line %d: Mysterious character \'%s\'.\n",
+             yylineno, msg);
+      break;
+    case 2:
+      printf("Error type A at Line %d: Invalid ID \'%s\'.\n", yylineno, msg);
+      break;
+    default:
+      printf("Error type B at Line %d: %s.\n", yylineno, msg);
+      break;
+  }
 
   // default
-  error_type = 2;
+  error_type = -1;
 }
 
 struct ast {

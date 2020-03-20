@@ -1,22 +1,26 @@
 %{
     #include "syntax.tab.h"
 
-    extern struct ast;
     extern struct ast* newnode(char* name, int num, ...);
+    extern void eval(struct ast* node, int level);
+    extern void yyerror(char*);
+    extern int fileno(FILE *);
+
     extern int error_type;
 %}
 
 %option yylineno
 
-LINECOMMENT  \/\/.*\n
+LINECOMMENT  \/\/.*
 BLOCKCOMMENT \/\*[^*]*\*+([^\/*][^*]*\*+)*\/
 dec         [1-9][0-9]*|0
-oct         0[1-7][0-7]*
-hex         0x[1-9a-fA-F][0-9a-fA-F]
-flt         [0-9]+\.[0-9]*
+oct         0[0-7]*
+hex         0[xX][0-9a-fA-F]*
+flt         [0-9]+\.[0-9]*|\.[0-9]+
 INT         {dec}|{oct}|{hex}
-FLOAT       {flt}|{flt}[eE][-\+]?{dec}
+FLOAT       {flt}|{flt}[eE][-\+]?[0-9]+|{dec}[eE][-\+]?[0-9]+
 ID          [a-z_A-Z][a-zA-Z_0-9]*
+ERRORID     [0-9]{ID}
 SEMI        ;
 COMMA       ,
 ASSIGNOP    =
@@ -56,6 +60,7 @@ ANERROR     .
 {ELSE}      { yylval.a = newnode("ELSE", 0); return ELSE; }
 {WHILE}     { yylval.a = newnode("WHILE", 0); return WHILE; }
 {ID}        { yylval.a = newnode("ID", 0); return ID; }
+{ERRORID}   { error_type = 2; yyerror(yytext); return ID; }
 {SEMI}      { yylval.a = newnode("SEMI", 0); return SEMI; }
 {COMMA}     { yylval.a = newnode("COMMA", 0); return COMMA; }
 {ASSIGNOP}  { yylval.a = newnode("ASSIGNOP", 0); return ASSIGNOP; }
