@@ -1,5 +1,11 @@
-int main()
+int func()
 {
-	int i = 1;
-	int j = ~i;
+	int i  = 10;
+	return i;
+}
+
+int main()
+{	int i;
+	int i, j;
+	i = func();
 }

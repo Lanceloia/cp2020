@@ -1,5 +1,6 @@
 %{
     #include <stdio.h>
+
     extern int yylex();
     extern void yyerror(char*);
     extern struct ast* root;
@@ -54,7 +55,8 @@ ExtDefList : ExtDef ExtDefList      { $$=newnode("ExtDefList", 2, $1, $2); }
     | /* empty */                   { $$=newnode("ExtDefList", -1); }
     ;
 ExtDef : Specifier ExtDecList SEMI  { $$=newnode("ExtDef", 3, $1, $2, $3); }
-    | Specifier SEMI                { $$=newnode("ExtDef", 2, $1, $2); }
+    | Specifier SEMI                                   { $$=newnode("ExtDef", 2, $1, $2); }
+    | Specifier FunDec SEMI              { $$=newnode("ExtDef", 3, $1, $2, $3); }
     | Specifier FunDec CompSt       { $$=newnode("ExtDef", 3, $1, $2, $3); }
     ;
 ExtDecList : VarDec             { $$=newnode("ExtDecList", 1, $1); }
@@ -90,7 +92,7 @@ ParamDec : Specifier VarDec         { $$=newnode("ParamDec", 2, $1, $2); }
     ;
 
 /* statements */
-CompSt : LC DefList StmtList RC     { $$=newnode("CompSt", 4, $1, $2, $3, $4); }
+CompSt : LC DefList StmtList RC { $$=newnode("CompSt", 4, $1, $2, $3, $4); }
     | error RC                   { }
     ;
 StmtList : Stmt StmtList            { $$=newnode("StmtList", 2, $1, $2); }
