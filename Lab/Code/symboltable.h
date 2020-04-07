@@ -1,8 +1,9 @@
 /* 接口 */
 typedef struct Type Type;
+typedef struct Function Function;
 typedef struct FieldList FieldList;
-typedef struct TypeList TypeList;
-typedef struct SymbolStk SymbolStk;
+typedef struct SymbolStkNode SymbolStkNode;
+typedef struct SymbolBucket SymbolBucket;
 typedef struct SymtabStk SymtabStk;
 
 extern void initSymtab();

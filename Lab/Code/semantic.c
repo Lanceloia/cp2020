@@ -23,10 +23,77 @@ struct ast {
 
 #define child(x) node->children[x]
 
+void semantic_error(int error_type, int lineno, char* msg) {
+  printf("Error type %d at Line %d: ", error_type, lineno);
+  switch (error_type) {
+    case 1:
+      printf("Undefinition variable: %s. \n", msg);
+      break;
+    case 2:
+      printf("Undefinition function: %s. \n", msg);
+      break;
+    case 3:
+      printf("Redefinition variable: %s \n", msg);
+      break;
+    case 4:
+      printf("Redefinition function: %s. \n", msg);
+      break;
+    case 5:
+      printf("Type error near the '='.  \n");
+      break;
+    case 6:
+      printf("The left side of '=' is a RIGHT exp. \n");
+      break;
+    case 7:
+      printf("Type error in this exp. \n");
+      break;
+    case 8:
+      printf("Return type error. \n");
+      break;
+    case 9:
+      printf("The amount of parameter, or paramter's type is wrong. \n");
+      break;
+    case 10:
+      printf("Use [] with non-array variable. \n");
+      break;
+    case 11:
+      printf("Use () with non-function variable. \n");
+      break;
+    case 12:
+      printf("FLOAT between '[' and ']' . \n");
+      break;
+    case 13:
+      printf("Use . with non-structure variable. \n");
+      break;
+    case 14:
+      printf("There is no dominant name %s. \n", msg);
+      break;
+    case 15:
+      printf("Redefinition dominant name, or initiate in the structure: %s. \n",
+             msg);
+      break;
+    case 16:
+      printf("Structure name %s is already exists. \n", msg);
+      break;
+    case 17:
+      printf("Undefinition structure %s. \n", msg);
+      break;
+    case 18:
+      printf("There is no definition of function %s. \n", msg);
+      break;
+    case 19:
+      printf("Conflict definition of function %s. \n", msg);
+      break;
+    default:
+      printf("default msg: %s. \n", msg);
+      break;
+  }
+}
+
 int type_equal(Type* type1, Type* type2) { return 1; }
 
 void eval_semantic(struct ast* root) {
-  eval_syntax_tree(root, 0);
+  // eval_syntax_tree(root, 0);
   Program_s(root);
 }
 
@@ -38,9 +105,10 @@ void Program_s(struct ast* node) {
 }
 
 void ExtDefList_s(struct ast* node) {
-  if (node->num == -1) return;
-  ExtDef_s(child(0));
-  ExtDefList_s(child(1));
+  // ExtDefList -> ExtDef ExtDefList | epsilon
+  if (node->num == -1) return;  // epsilon
+  ExtDef_s(child(0));           // ExtDef
+  ExtDefList_s(child(1));       // ExtDefList
 }
 
 void ExtDef_s(struct ast* node) {
@@ -50,14 +118,13 @@ void ExtDef_s(struct ast* node) {
   if (!strcmp(child(1)->name, "ExtDecList")) {  // 定义：int a,b,c
     ExtDecList_s(child(1), type);
   }
-  if (!strcmp(child(1)->name, "SEMI")) {  // 声明：struct a;
+  if (!strcmp(child(1)->name, "SEMI")) {  // 声明：struct a, int a
     Type* ans_type;
     int ans_how;
     querySymtab(name, ans_type, &ans_how);
-    if (!type_equal(type, ans_type))
+    if (!type_equal(type, ans_type)) {
       printf("冲突的声明\n");
-    else
-      printf("正确的声明\n");
+    }
   }
   if (!strcmp(child(1)->name, "FunDec")) {  // 定义：int f(...){...}
     if (!strcmp(child(2)->name, "CompSt")) {
@@ -107,7 +174,7 @@ void CompSt_s(struct ast* node) {
 }
 
 void DefList_s(struct ast* node) {
-  printf("FCK, %s, %d\n", node->name, node->num);
+  // printf("FCK, %s, %d\n", node->name, node->num);
   if (node->num == -1) return;
   Def_s(child(0));
   DefList_s(child(1));
