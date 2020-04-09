@@ -1,23 +1,55 @@
 #include "lexical_syntax.h"
 #include "symboltable.h"
 
-void Program_s(struct ast* node);
-void ExtDefList_s(struct ast* node);
-void ExtDef_s(struct ast* node);
-void Specifier_s(struct ast* node, Type* type, char* name);
-void FunDec_s(struct ast* node, Type* ret_type, int how);
-void CompSt_s(struct ast* node);
-void DefList_s(struct ast* node);
-void Def_s(struct ast* node);
-void StmtList_s(struct ast* node);
-void Stmt_s(struct ast* node);
-void Specifier_s(struct ast* node, Type* type, char* name);
-void ExtDecList_s(struct ast* node, Type* type);
-void DecList_s(struct ast* node, Type* type);
-void Dec_s(struct ast* node, Type* type);
-void VarDec_s(struct ast* node, Type* type);
-void Exp_s(struct ast* node);
-void Args_s(struct ast* node);
+#ifndef SEMANTIC_H
+#define SEMANTIC_H
+
+void Program(struct ast* node);
+void ExtDefList(struct ast* node);
+void ExtDef(struct ast* node);
+void ExtDecList(struct ast* node, const Type* type);
+
+void Specifier(struct ast* node, Type* type);
+void StructSpecifier(struct ast* node, Type* type);
+void OptTag(struct ast* node, Symbol* sb);
+void Tag(struct ast* node, Symbol* sb);
+
+void FunDec(struct ast* node, const Type* ret_type, const int dec);
+void CompSt(struct ast* node);
+
+void DefList(struct ast* node);
+void Def(struct ast* node);
+void StmtList(struct ast* node);
+void Stmt(struct ast* node);
+
+void DecList(struct ast* node, const Type* type, const int dec);
+void Dec(struct ast* node, const Type* type, const int dec);
+void VarDec(struct ast* node, const Type* type, const int dec);
+int Exp(struct ast* node, Type* val_type);
+void Args(struct ast* node, FieldList* parameter);
+
+void ID(struct ast* node, Symbol* sb);
 
 /* 接口 */
 void eval_semantic(struct ast* root);
+
+#define RET_INSERTSYMTAB_CHECK(symbol)                     \
+  switch (ret) {                                           \
+    case 0:                                                \
+      break;                                               \
+    case 1:                                                \
+      if (symbol.kind == _VARIABLE)                        \
+        semantic_error(3, node->line, symbol.symbolname);  \
+      else if (symbol.kind == _FUNCTION_NAME)              \
+        semantic_error(4, node->line, symbol.symbolname);  \
+      else if (symbol.kind == _STRUCT_NAME)                \
+        semantic_error(16, node->line, symbol.symbolname); \
+      else                                                 \
+        assert(0);                                         \
+      break;                                               \
+    default:                                               \
+      assert(0);                                           \
+      break;                                               \
+  }
+
+#endif

@@ -1,0 +1,27 @@
+#include "lexical_syntax.h"
+#include "symboltable.h"
+
+void Program_s(struct ast* node);
+void ExtDefList_s(struct ast* node);
+void ExtDef_s(struct ast* node);
+// 确定标识符的类型和类型名
+void Specifier_s(struct ast* node, Type* type);
+void StructSpecifier_s(struct ast* node, Type* type);
+void OptTag_s(struct ast* node, Type* type);
+void FunDec_s(struct ast* node, Type* ret_type, int how);
+void CompSt_s(struct ast* node);
+// mode == 0，变量的普通定义，此时fl == NULL
+// mode == 1，结构体内的变量的定义，需要构建FieldList
+void DefList_s(struct ast* node, int mode, FieldList* fl);
+void Def_s(struct ast* node, int mode, FieldList* fl);
+void StmtList_s(struct ast* node);
+void Stmt_s(struct ast* node);
+void ExtDecList_s(struct ast* node, Type* type);
+void DecList_s(struct ast* node, Type* type, int mode, FieldList* fl);
+void Dec_s(struct ast* node, Type* type, int mode, FieldList* fl);
+void VarDec_s(struct ast* node, Type* type, int mode, FieldList* fl);
+void Exp_s(struct ast* node);
+void Args_s(struct ast* node);
+
+/* 接口 */
+void eval_semantic(struct ast* root);

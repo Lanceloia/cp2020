@@ -4,8 +4,24 @@ int func()
 	return i;
 }
 
+struct a{
+	int a;
+	int b;
+	struct k{
+		float c;
+		float d;
+	}e;
+};
+
+struct b k;
+
+int k;
+
 int main()
-{	int i;
-	int i, j;
-	i = func();
+{	
+	int i;
+	float j;
+	int a[3];
+	i + j;
+	a[0] = 2;
 }

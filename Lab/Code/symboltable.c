@@ -1,10 +1,11 @@
 #include "symboltable.h"
 
+#include "assert.h"
 #include "stdio.h"
 #include "stdlib.h"
 #include "string.h"
 
-// #define DEBUG
+#define DEBUG
 
 /*
 全局符号表使用散列表来存储，用桶来处理hash值冲突的问题
@@ -32,98 +33,212 @@
     （2.4）没有定义/声明：将定义存入局部符号表，然后压入全局符号表中的符号桶
 
 遇到该Compst的右括号时，删除该局部符号表，并将定义的符号从全局符号表中删除，如果还有声明的符号，说明有未定义但声明了的符号
+
+对于符号：
+（1）struct a和a不是同名
+  （1.1）因为ID不可以包含空格，将"struct
+a"作为前者的名字（结构体类型名），"a"作为后者的名字（变量名） （1.2）此时struct
+a不会覆盖a的作用域
+
 */
 
-#define SYMTAB_SIZE 0x3FFF
-#define MAX_NAME_LEN 32
+void semantic_error(int error_type, int lineno, char* msg);
 
-#define WRONG 0
-#define DEFINITION 1
-#define DECLARATION 2
-
-struct Type {
-  enum { _INT, _FLOAT, _ARRAY, _STRUCTURE } kind;
-  union {
-    int int_val;      // 暂时没用
-    float float_val;  // 暂时没用
-    struct {
-      Type* type;
-      int size;
-    } array;
-    FieldList* structure;
-  };
-};
-
-struct Function {
-  Type* ret_type;
-  FieldList* parameter;
-};
-// 新增
-
-struct FieldList {
-  char name[MAX_NAME_LEN];
-  Type* type;
-  FieldList* next;
-};
-
-struct SymbolStkNode {
-  enum { _VARABLE, _FUNCTION } kind;  // 该符号是变量还是函数
-  union {
-    Type* type;          // 当前符号（变量）的类型
-    Function* function;  // 当前符号（函数）的返回值和参数列表
-  };
-  int how;              // 声明或是定义
-  SymbolStkNode* next;  // 与该符号同名的下一种类型
-};
-
+// 用于全局符号表
+/* SymbolBucket symtab_g[SYMTAB_SIZE]
+            ||
+    SymbolBucket[0]: name == x,  name ==  y, hash(x)==hash(y)==0
+    SymbolBucket[1]: name == w，其中hash(w)==1
+    ...
+*/
 struct SymbolBucket {
-  char name[MAX_NAME_LEN];  // 当前符号的名字
-  SymbolStkNode* head;      //指向该符号的类型链表的首元素
-  SymbolBucket* next;       // 符号表中的下一个桶
+  // char name[MAX_NAME_LEN];  // 当前符号的名字，其必定与head->symbolname相同
+  Symbol* head;              //指向该符号的类型链表的首元素
+  SymbolBucket* nextbucket;  // 符号表中的下一个桶
 };
 
 struct SymtabStk {
-  SymbolBucket* head;  // 指向当前符号表内的第一个桶
-  SymtabStk* next;  // 栈上的下一个符号表（即外层代码块的符号表）
+  Symbol* head;  // 指向当前符号表内的第一个元素
+  SymtabStk* lastsymtab;  // 栈上的上一个符号表（即外层代码块的符号表）
 };
+
+/*
+void build_FieldList(FieldList* fl, char* name, Type* type) {
+  // 新申请一个FieldList，插在fl的末尾
+  if (fl->type == NULL) {
+    strcpy(fl->name, name);
+    fl->type = type;
+    fl->next = NULL;
+  } else {
+    FieldList* temp = malloc(sizeof(FieldList));
+    strcpy(temp->name, name);
+    temp->type = type;
+    temp->next = NULL;
+    FieldList* fl2 = fl;
+    while (fl2->next != NULL) {
+      printf("%s, ", fl2->name);
+      fl2 = fl2->next;
+    }
+    fl2->next = temp;
+  }
+  printf("目前的域：\n");
+  while (fl != NULL) {
+    printf("%s:%s\n", fl->type->typename, fl->name);
+    fl = fl->next;
+  }
+}
+
+void build_Type_INT(Type* type, int val) {
+  strcpy(type->typename, "int ");
+  type->kind = _INT;
+  type->int_val = val;
+}
+
+void build_Type_FLOAT(Type* type, float val) {
+  strcpy(type->typename, "float ");
+  type->kind = _FLOAT;
+  type->float_val = val;
+}
+
+void build_Type_ARRAY(Type* type, Type* array_type, int array_size) {
+  char newname[MAX_NAME_LEN];
+  sprintf(newname, "%.16s[]", array_type->typename, array_size);
+  strcpy(type->typename, newname);
+  type->kind = _ARRAY;
+  type->array.type = array_type;
+  type->array.size = array_size;
+}
+
+void build_Type_STRUCTURE(Type* type, FieldList* structure) {
+  type->kind = _STRUCTURE;
+  type->structure = structure;
+}
+*/
+
+#define SYMTAB_SIZE 0x3FFF
 
 SymbolBucket* symtab_g[SYMTAB_SIZE];  // 全局符号表，使用散列表存储
 SymtabStk* symtab_l;  // 局部符号表，（的链表中的）当前符号表指针
 int symtab_l_cnt;  // 表的嵌套层数，debug用
 
-/* 栈 */
-
-void stack_push(SymbolBucket* addr, char* name, Type* type, int how) {
-  if (strcmp(name, addr->name) != 0) {
-    printf("上层逻辑错误，表中符号为%s，期望插入符号为%s\n", addr->name, name);
-    return;
+/* 域类型比较 */
+int fieldlist_equal(const FieldList* fl1, const FieldList* fl2) {
+  while (fl1 && fl2) {
+    const Type *t1 = &fl1->vartype, *t2 = &fl2->vartype;
+    if (t1->kind != t2->kind) return 0;
+    if (!type_equal(t1, t2)) return 0;
+    fl1 = fl1->next, fl2 = fl2->next;
   }
-  SymbolStkNode* old_head = addr->head;
-  SymbolStkNode* new_head = malloc(sizeof(SymbolStkNode));
-  // type赋值
-  new_head->type = type;
-  // how赋值
-  new_head->how = how;
-  new_head->next = old_head;
-  addr->head = new_head;
+  if (fl1 != NULL || fl2 != NULL) return 0;
+  return 1;
 }
 
-void stack_pop(SymbolBucket* addr, char* name) {
-  if (strcmp(name, addr->name) != 0) {
-    printf("上层逻辑错误，表中符号为%s，期望插入符号为%s\n", addr->name, name);
-    return;
+/* 变量类型比较 */
+int type_equal(const Type* t1, const Type* t2) {
+  if (t1->kind != t2->kind) return 0;
+  if (t1->kind == _ARRAY)
+    // 对于数组类型，比较它们的基类型
+    return type_equal(t1->array.type, t2->array.type);
+  else if (t1->kind == _STRUCTURE)
+    // 对于结构体类型，比较它们的域
+    return fieldlist_equal(t1->structure.field, t2->structure.field);
+  else
+    // 对于INT和FLOAT（等基本）类型，由上文知相等
+    return 1;
+}
+
+/* 结构体名比较 */
+int structure_equal(const Structure* st1, const Structure* st2) {
+  // 使用结构等价
+  return fieldlist_equal(st1->field, st2->field);
+}
+
+/*  函数名比较 */
+int function_equal(const Function* func1, const Function* func2) {
+  if (!type_equal(&func1->ret_type, &func2->ret_type)) return 0;
+  if (!fieldlist_equal(func1->parameter, func2->parameter)) return 0;
+  return 1;
+}
+
+/* 符号比较 */
+int symbol_kind_equal(const Symbol* sb1, const Symbol* sb2) {
+  if (sb1->kind == _STRUCT_NAME || sb2->kind == _STRUCT_NAME) {
+    printf("symbol_kind_equal(): should not be here. \n");
+    // 不应该到这里
+    return 0;
   }
-  if (addr->head == NULL) {
-    printf("对空栈(%s)进行弹出\n", addr->name);
-    return;
+  if (sb1->kind != sb2->kind) return 0;
+  if (sb1->kind == _VARIABLE)
+    return type_equal(&sb1->variable.type, &sb2->variable.type);
+  else
+    // if (sb1->kind == _FUNCTION_NAME)
+    return function_equal(&sb1->function, &sb2->function);
+}
+
+/* 栈 */
+void stack_push(SymbolBucket* addr, Symbol* sb) {
+  Symbol* new_head = malloc(sizeof(Symbol));
+  *new_head = *sb;
+  // printf("sb(%d): %s, %p\n", sb->kind, sb->symbolname, sb->structure.field);
+  assert(addr->head == NULL);
+  new_head->nextsymbol = addr->head;
+  addr->head = new_head;
+  /*
+  Symbol* sbb = addr->head;
+  while (sbb) {
+    printf("name: %s\n", sbb->symbolname);
+    sbb = sbb->nextsymbol;
   }
-  SymbolStkNode* old_head = addr->head;
-  addr->head = addr->head->next;
-  free(old_head);
+  */
+  // printf("newhead: %p,", addr->head);
+}
+
+void stack_pop(SymbolBucket* addr) {
+  assert(addr->head != NULL);
+  Symbol* head = addr->head;
+  addr->head = head->nextsymbol;
+  // printf("bucket of %s, addr->next: %p\n", addr->name, addr->head);
+  free(head);
+}
+
+/* 域 */
+void fieldlist_pushall(FieldList* fl) {
+  // 获取当前的局部符号表
+  // FieldList* debugfl = fl;
+
+  Symbol* sb = symtab_l->head;
+  do {
+    if (sb->kind == _VARIABLE) {
+      strcpy(fl->varname, sb->symbolname);
+      fl->vartype = sb->variable.type;
+      if (sb->nextsymbol != NULL) fl->next = malloc(sizeof(FieldList));
+      fl = fl->next;
+    } else if (sb->kind == _STRUCT_NAME) {
+      // 这个是在结构体内定义的struct类型，并不是fieldlist的内容
+      // 什么都不做，pass
+    } else {
+      assert(0);
+    }
+    // printf("name: %s, kind: %d\n", sb->symbolname, sb->kind);
+    sb = sb->nextsymbol;
+  } while (sb != NULL);
+  /*
+    while (debugfl) {
+      printf("name: %s\n", debugfl->varname);
+      debugfl = debugfl->next;
+    }
+    */
+}
+
+void fieldlist_popall(FieldList* fl) {
+  while (fl != NULL) {
+    FieldList* fl2 = fl;
+    fl = fl->next;
+    free(fl2);
+  }
 }
 
 /* 全局符号表 */
-
 void global_init() { memset(symtab_g, 0x00, sizeof(symtab_g)); }
 
 unsigned hash(char* name) {
@@ -135,82 +250,107 @@ unsigned hash(char* name) {
   return val;
 }
 
-void global_insert(char* name, Type* type, int how) {
-  /*
-    向全局符号表中插入一个符号
-    名字为name，值为type
-   */
-
-  int val = hash(name);                // 计算name对应的hash值
-  SymbolBucket* temp = symtab_g[val];  // temp指向name对应的桶中的首元素
-  while (temp != NULL)                 // 通过while循环strcmp找到hash桶
-    if (strcmp(name, temp->name) == 0) break;
-  if (temp == NULL) {  //没找到name这个符号，name是新符号
-    // 创建一个新的桶
-    temp = malloc(sizeof(SymbolBucket));
-    strcpy(temp->name, name);
-    temp->next = NULL;
-    symtab_g[val] = temp;
-  }
-  // 全局表只放定义，不放声明
-  if (how == DEFINITION) stack_push(temp, name, type, how);
-}
-
-void global_query(char* name, Type* ans_type, int* ans_how) {
-/*
-  查询全局符号表中的名字为name的符号的值type和定义方式how
-  若存在多个值对应，返回第一个值
+/* 向全局符号表中插入一个符号
+  名字为name，值为type
  */
+
+void global_insert(Symbol* sb) {
 #ifdef DEBUG
-  printf("global_query(%s)\n", name);
+  // printf("  global_insert(%s)\n", sb->symbolname);
 #endif
-  int val = hash(name);
-  SymbolBucket* temp = symtab_g[val];
-  //哈希表中横向查询
-  while (temp != NULL)
-    if (strcmp(name, temp->name) == 0) break;
-  if (temp == NULL) {  //没有找到name这个符号，name未定义
-    printf("未定义的符号");
-    ans_type = NULL;
-    ans_how = WRONG;
-  } else {  //找到了name这个符号，对应栈顶的对象
-    ans_type = temp->head->type;
-    *ans_how = temp->head->how;
+  // 全局表只放定义，不放声明
+  // printf("%s: defmethond%d\n", sb->symbolname, sb->dec);
+  assert(sb->dec == DEFINITION);
+  int val = hash(sb->symbolname);  // 计算name对应的hash值
+  // printf("hash(%s) = %d\n", sb->symbolname, val);
+  SymbolBucket* bk = symtab_g[val];  // temp指向name对应的桶中的首元素
+  while (bk != NULL) {               // 通过while循环strcmp找到hash桶
+    if (!strcmp(sb->symbolname, bk->head->symbolname)) break;
+    bk = bk->nextbucket;
   }
+  if (bk == NULL) {  //没找到name这个符号，name是新符号
+    // 创建一个新的桶
+    bk = malloc(sizeof(SymbolBucket));
+    // strcpy(bk->name, sb->symbolname);
+    bk->head = NULL;
+    bk->nextbucket = symtab_g[val];
+    symtab_g[val] = bk;
+  }
+
+  stack_push(bk, sb);
+  // 桶中元素的符号名相同
+  assert(!strcmp(bk->head->symbolname, sb->symbolname));
 }
 
-void global_remove(char* name) {
-  /*
-    移除全局符号表中的名字为name的符号的第一个值type
-    若不存在这样的type，报错
-  */
-  int val = hash(name);
-  SymbolBucket* temp = symtab_g[val];
-  while (temp != NULL)
-    if (strcmp(name, temp->name) == 0) break;
-  if (temp == NULL)  //没有找到name这个符号，name未定义
-    printf("未定义的符号: %s", name);
-  else {  //找到了name这个符号，弹出栈顶的对象
-    stack_pop(temp, name);
-    if (temp->head == NULL)  //如果弹出了栈中的所有对象
-      symtab_g[val] = NULL;  //抹去散列表中的对应项
+/* 查询全局符号表中的名字为name的符号的值type和定义方式how
+  如果存在多个值对应，返回栈上的第一个值
+  如果查询的是结构体类型，即name的前缀为"struct "，type返回的是该结构体的域
+ */
+void global_query(char* symbolname, Symbol* ans_sb) {
+#ifdef DEBUG
+  printf("global_query(%s)\n", symbolname);
+#endif
+  int val = hash(symbolname);
+  SymbolBucket* bk = symtab_g[val];
+  while (bk != NULL) {
+    // 空桶需要删除，此处assert保证桶均非空
+    assert(bk->head != NULL);
+    if (!strcmp(bk->head->symbolname, symbolname)) break;
+  }
+  // if (bk == NULL || bk->head == NULL)
+  if (bk == NULL)
+    // 没有找到这个符号，未定义
+    ans_sb->dec = UNDEFINE;
+  else
+    // 找到这个符号
+    *ans_sb = *bk->head;
+}
+
+/*  移除全局符号表中的名字为name的符号的第一个值type
+  若不存在这样的type，报错
+*/
+void global_remove(char* symbolname) {
+#ifdef DEBUG
+  // printf("global_remove(%s)\n", symbolname);
+#endif
+  int val = hash(symbolname);
+  SymbolBucket* bk = symtab_g[val];
+  while (bk != NULL)
+    if (!strcmp(bk->head->symbolname, symbolname)) break;
+  // printf("name: %s\n", symbolname);
+  assert(bk != NULL);
+  // 桶中元素的符号名相同
+  // assert(!strcmp(bk->name, symbolname));
+  stack_pop(bk);
+  // 在桶为空时删除桶
+  if (bk->head == NULL) {
+    SymbolBucket* pre_bk = symtab_g[val];
+    if (pre_bk == bk) {
+      symtab_g[val] = pre_bk->nextbucket;
+    } else {
+      while (pre_bk->nextbucket != bk) pre_bk = pre_bk->nextbucket;
+      assert(0);
+      assert(pre_bk->nextbucket == bk);
+      pre_bk->nextbucket = bk->nextbucket;
+    }
+    free(bk);
   }
 }
 
 int global_debug() {
-  return 0;
-  for (int eachval = 0; eachval < SYMTAB_SIZE; eachval++) {
-    if (symtab_g[eachval]) {
-      SymbolBucket* temp = symtab_g[eachval];
-      while (temp) {
+  for (int val = 0; val < SYMTAB_SIZE; val++) {
+    if (symtab_g[val]) {
+      SymbolBucket* bk = symtab_g[val];
+      while (bk) {
         int cnt = 0;
-        SymbolStkNode* temp2 = temp->head;
-        while (temp2) {
+        Symbol* sb = bk->head;
+        while (sb) {
+          // printf("%s,%p\n", bk->head->symbolname, bk->head);
           cnt++;
-          temp2 = temp2->next;
+          sb = sb->nextsymbol;
         }
-        printf("name: %s, cnt: %d\n", temp->name, cnt);
-        temp = temp->next;
+        printf("name: %s, cnt: %d\n", bk->head->symbolname, cnt);
+        bk = bk->nextbucket;
       }
     }
   }
@@ -219,129 +359,164 @@ int global_debug() {
 }
 
 /* 局部符号表 */
+void local_init() { symtab_l = NULL; }
 
-int local_insert(char* name, Type* type, int how) {
-  SymbolBucket* temp = symtab_l->head;
-  while (temp != NULL) {
-    if (strcmp(temp->name, name) == 0) {
+int local_insert(Symbol* sb) {
+#ifdef DEBUG
+  // printf("  local_insert(%s)\n", sb->symbolname);
+#endif
+  Symbol* symbol = symtab_l->head;
+  while (symbol != NULL) {
+    if (!strcmp(symbol->symbolname, sb->symbolname)) {
       // 符号已存在
-      printf("已存在\n");
-      if (how == DEFINITION && temp->head->how == DEFINITION) {
-        // 且两个都是定义，则冲突
-        printf("重定义的符号: %s\n", name);
-        return 1;
-      } else if (how == DEFINITION) {
-        // 原有的是声明，新的是定义，则覆盖
-        temp->head->how = how;
-        return 0;
-      } else {
-        // 先定义后声明，或者两个声明，则空过
-        return 0;
+      if (sb->dec == DEFINITION &&
+          symbol->dec == DEFINITION) {     // 两个都是定义，则冲突
+        return 1;                          // 重定义的符号: return 1;
+      } else if (sb->dec == DEFINITION) {  // 新的是定义
+        if (symbol_kind_equal(sb, symbol)) {
+          symbol->dec = DEFINITION;
+          return 0;
+        } else {
+          return 2;  // 定义与声明kind冲突: return 2
+        }
+      } else {  // 先定义后声明，或者两个声明，则检查冲突
+        if (!symbol_kind_equal(symbol, sb))
+          return 0;
+        else
+          return 3;  // 声明与定义冲突、声明与声明冲突 return 3
       }
     }
-    temp = temp->next;
+    // 在局部符号表中，nextsymbol是不同名的符号
+    symbol = symbol->nextsymbol;
   }
-  // 该符号不存在，则创建
-  temp = malloc(sizeof(SymbolBucket));
-  strcpy(temp->name, name);
-  temp->head = malloc(sizeof(SymbolStkNode));
-  temp->head->type = type;
-  temp->head->how = how;
-  // 将该符号加入局部符号表
-  temp->next = symtab_l->head;
-  symtab_l->head = temp;
 
+  // 该符号不存在，则创建
+  assert(symbol == NULL);
+  symbol = malloc(sizeof(Symbol));
+  *symbol = *sb;
+
+  // 将该符号加入局部符号表
+  symbol->nextsymbol = symtab_l->head;
+  symtab_l->head = symbol;
   return 0;
 }
 
-void local_query(char* name, Type* ans_type, int* ans_how) {
+void local_query(char* symbolname, Symbol* ans_sb) {
 #ifdef DEBUG
-  printf("local_query(%s)\n", name);
+  printf("local_query(%s)\n", symbolname);
 #endif
-  SymbolBucket* temp = symtab_l->head;
-  while (temp != NULL) {
-    if (strcmp(temp->name, name) == 0) {
-      ans_type = temp->head->type;
-      *ans_how = temp->head->how;
+  Symbol* sb = symtab_l->head;
+  while (sb != NULL) {
+    if (!strcmp(sb->symbolname, symbolname)) {
+      *ans_sb = *sb;
       return;
     }
-    temp = temp->next;
+    sb = sb->nextsymbol;
   }
-  ans_type = NULL;
-  *ans_how = WRONG;
+  ans_sb->dec = UNDEFINE;
 }
 
 /* 符号表 */
-
-void initSymtab() { global_init(); }
+void initSymtab() {
+  global_init();
+  local_init();
+}
 
 void createSymtab() {
   if (symtab_l == NULL) {
     symtab_l = malloc(sizeof(SymtabStk));
-    symtab_l->next = NULL;
+    symtab_l->lastsymtab = NULL;
   } else {
-    SymtabStk* temp = malloc(sizeof(SymtabStk));
-    temp->next = symtab_l;
-    symtab_l = temp;
+    SymtabStk* st = malloc(sizeof(SymtabStk));
+    st->lastsymtab = symtab_l;
+    symtab_l = st;
   }
+  symtab_l->head = NULL;
   symtab_l_cnt += 1;
 #ifdef DEBUG
   printf("createSymtab: %d\n", symtab_l_cnt);
 #endif
-  global_debug();
 }
 
-void insertSymtab(char* name, Type* type, int how) {
+int insertSymtab(Symbol* sb) {
 #ifdef DEBUG
-  printf("insert %s\n", name);
+  printf("insert symbolname: %s, dec: %d\n", sb->symbolname, sb->dec);
 #endif
-  if (local_insert(name, type, how)) {
-    printf("一些错误发生了\n");
-  } else {
-    global_insert(name, type, how);
-  }
-  global_debug();
+  int ret = local_insert(sb);
+  if (ret)
+    return ret;
+  else
+    global_insert(sb);
+  return 0;
 }
 
-void querySymtab(char* name, Type* ans_type, int* ans_how) {
-  local_query(name, ans_type, ans_how);
+void querySymtab(char* symbolname, Symbol* ans_sb) {
+  local_query(symbolname, ans_sb);
   // 局部表找到声明或者定义都算成功，结果存储在ans_how上
-  if (*ans_how == WRONG) {
+  if (ans_sb->dec == UNDEFINE) {
     // 局部表中找不到，去全局表找
-    global_query(name, ans_type, ans_how);
+    global_query(symbolname, ans_sb);
   }
 }
+
+void buildFieldListFromSymtab(Structure* structure) {
+  // FuncDec和StructSpecifier会调用此函数
+  assert(structure->field == NULL);
+  structure->field = malloc(sizeof(FieldList));
+  fieldlist_pushall(structure->field);
+}
+
+void dropFieldListAfterPush(FieldList* fl) { fieldlist_popall(fl); }
 
 void dropSymtab() {
-  SymtabStk* temp = symtab_l;
-  SymbolBucket* temp2 = temp->head;
-  while (temp2 != NULL) {
-    if (temp2->head->how == DEFINITION) {
-      global_remove(temp2->name);
-    } else if (temp2->head->how == DECLARATION) {
-      printf("只有声明没有定义的符号: %s", temp2->name);
-    }
-    SymbolBucket* next = temp2->next;
-    free(temp2->head);
-    free(temp2);
-    temp2 = next;
-  }
-  symtab_l = temp->next;
-  free(temp);
-  symtab_l_cnt -= 1;
+  // 对于FunDec和Compst的Symtab，其作用域结束时所有符号都不能再使用，故从global中移除
+  // 对于StructSpecifier的Symtab，其作用域结束时符号还可能被其他Stmt使用
+  // 当StructSpecifier外部的Symtab需要销毁时，这些符号才不能再被访问
+  // 对于嵌套问题，可以在变量名前加前缀解决
+  /*
+  struct A{   // type: s(A), symbol: (none)
+    int a;        //A.a
+    struct{     // type: s(A).us(b), symbol: A.b
+      int a;      //A.b.a
+      struct{   // type: s(A).us(b).us(c), symbol: A.b.c
+        int a;    //A.b.c.a
+      }c;
+    }b;
+    struct C{  // type: s(A).s(C), symbol: A.e
+      int a;       // A.e.a
+    }e;
+  };
+  */
+
 #ifdef DEBUG
-  printf("dropSymtab: %d\n", symtab_l_cnt + 1);
+  printf("dropSymtab: %d\n", symtab_l_cnt);
 #endif
-  global_debug();
+  Symbol* sb = symtab_l->head;
+  while (sb != NULL) {
+    if (sb->dec == DEFINITION) {
+      global_remove(sb->symbolname);
+    } else {
+      assert(sb->dec == DECLARATION);
+      // if (bk->head->dec == DECLARATION)
+      printf("没有定义的已声明符号: (%s)\n", sb->symbolname);
+    }
+    Symbol* nextsb = sb->nextsymbol;
+    free(sb);
+    sb = nextsb;
+  }
+  SymtabStk* st = symtab_l;
+  symtab_l = st->lastsymtab;
+  free(st);
+  symtab_l_cnt -= 1;
 }
 
 void showSymtab() {
-  SymbolBucket* temp = symtab_l->head;
-  printf("%p\n", temp);
-  printf("current Symtab: ");
-  while (temp != NULL) {
-    printf("%s, ", temp->name);
-    temp = temp->next;
+  int cnt = 0;
+  Symbol* sb = symtab_l->head;
+  printf("current Symtab: \n");
+  while (sb != NULL) {
+    printf("(%d)%s, ", cnt++, sb->symbolname);
+    sb = sb->nextsymbol;
   }
-  printf("\n\n");
+  printf("\n");
 }
