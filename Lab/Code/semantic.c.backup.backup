@@ -1,0 +1,442 @@
+#include "semantic.h"
+
+#include "lexical_syntax.h"
+#include "stdio.h"
+#include "stdlib.h"
+#include "string.h"
+#include "symboltable.h"
+
+struct Type {
+  enum { _INT, _FLOAT, _ARRAY, _STRUCTURE } kind;
+  union {
+    int int_val;      // 暂时没用
+    float float_val;  // 暂时没用
+    struct {
+      Type* type;
+      int size;
+    } array;
+    FieldList* structure;
+  };
+  char typename[MAX_NAME_LEN];
+};
+
+struct ast {
+  int line, num;
+  char* name;
+  struct ast* children[8];
+  union {
+    char id_name[MAX_NAME_LEN];
+    int int_value;
+    float float_value;
+  };
+};
+
+struct FieldList {
+  char name[MAX_NAME_LEN];
+  Type* type;
+  FieldList* next;
+};
+
+#define child(x) node->children[x]
+
+void semantic_error(int error_type, int lineno, char* msg) {
+  printf("Error type %d at Line %d: ", error_type, lineno);
+  switch (error_type) {
+    case 1:
+      printf("Undefinition variable: %s. \n", msg);
+      break;
+    case 2:
+      printf("Undefinition function: %s. \n", msg);
+      break;
+    case 3:
+      printf("Redefinition variable: %s \n", msg);
+      break;
+    case 4:
+      printf("Redefinition function: %s. \n", msg);
+      break;
+    case 5:
+      printf("Type error near the '='.  \n");
+      break;
+    case 6:
+      printf("The left side of '=' is a RIGHT exp. \n");
+      break;
+    case 7:
+      printf("Type error in this exp. \n");
+      break;
+    case 8:
+      printf("Return type error. \n");
+      break;
+    case 9:
+      printf("The amount of parameter, or paramter's type is wrong. \n");
+      break;
+    case 10:
+      printf("Use [] with non-array variable. \n");
+      break;
+    case 11:
+      printf("Use () with non-function variable. \n");
+      break;
+    case 12:
+      printf("FLOAT between '[' and ']' . \n");
+      break;
+    case 13:
+      printf("Use . with non-structure variable. \n");
+      break;
+    case 14:
+      printf("There is no dominant name %s. \n", msg);
+      break;
+    case 15:
+      printf("Redefinition dominant name, or initiate in the structure: %s. \n",
+             msg);
+      break;
+    case 16:
+      printf("Structure name %s is already exists. \n", msg);
+      break;
+    case 17:
+      printf("Undefinition structure %s. \n", msg);
+      break;
+    case 18:
+      printf("There is no definition of function %s. \n", msg);
+      break;
+    case 19:
+      printf("Conflict definition of function %s. \n", msg);
+      break;
+    default:
+      printf("default msg: %s. \n", msg);
+      break;
+  }
+}
+
+int type_equal(Type* type1, Type* type2) { return 1; }
+
+void eval_semantic(struct ast* root) {
+  // eval_syntax_tree(root, 0);
+  Program_s(root);
+}
+
+void Program_s(struct ast* node) {
+  initSymtab();
+  createSymtab();
+  ExtDefList_s(child(0));
+  dropSymtab();
+}
+
+void ExtDefList_s(struct ast* node) {
+  // ExtDefList -> ExtDef ExtDefList | epsilon
+  if (node->num == -1) return;  // epsilon
+  ExtDef_s(child(0));           // ExtDef
+  ExtDefList_s(child(1));       // ExtDefList
+}
+
+void ExtDef_s(struct ast* node) {
+  Type* type = malloc(sizeof(Type));  // INT, FLOAT, ARRAY...
+  Specifier_s(child(0), type);        // type, typename = Specifier.val
+  if (!strcmp(child(1)->name, "ExtDecList")) {  // 定义：int a,b,c
+    ExtDecList_s(child(1), type);
+  }
+  if (!strcmp(child(1)->name, "SEMI")) {  // 声明：struct a, int a
+    Type ans_type;
+    int ans_how;
+    querySymtab(type->typename, &ans_type, &ans_how);
+    if (ans_how == WRONG) {
+      printf("可以定义的符号: %s\n", type->typename);
+      insertSymtab(type->typename, type, DEFINITION);
+    } else if (type_equal(type, &ans_type))
+      printf("不冲突的声明\n");
+    else
+      printf("冲突的声明");
+  }
+  if (!strcmp(child(1)->name, "FunDec")) {  // 定义：int f(...){...}
+    if (!strcmp(child(2)->name, "CompSt")) {
+      // FunDec
+      FunDec_s(child(1), type, DEFINITION);
+      // CompSt
+      CompSt_s(child(2));
+      // dropSymtab();
+    } else if (!strcmp(child(2)->name, "SEMI")) {
+      // FunDec
+      FunDec_s(child(1), type, DECLARATION);
+      // SEMI
+      // dropSymtab();
+    }
+  }
+}
+
+void ExtDecList_s(struct ast* node, Type* type) {
+  if (node->num == 1) {
+    // VarDec
+    VarDec_s(child(0), type, 0, NULL);
+  } else if (node->num == 3) {
+    // VarDec
+    VarDec_s(child(0), type, 0, NULL);
+    // COMMA
+    // ExtDecList
+    ExtDecList_s(child(2), type);
+  }
+}
+
+void FunDec_s(struct ast* node, Type* ret_type, int how) {
+  // ID
+  struct ast* id = child(0);
+  // 我们暂时认为函数是没有局部作用域的，我不知道在函数f内定义变量f会发生什么
+  printf("%d\n", how);
+  insertSymtab(id->id_name, ret_type, how);
+  // LP
+  // 函数的参数拥有局部作用域，对应的drop语句在ExtDef对FunDec的调用的结尾
+  // createSymtab();
+  // VarList
+  // RP
+}
+
+void CompSt_s(struct ast* node) {
+  // LC
+  createSymtab();
+  // DefList
+  DefList_s(child(1), 0, NULL);
+  // StmtList
+  StmtList_s(child(2));
+  // RC
+  dropSymtab();
+}
+
+void DefList_s(struct ast* node, int mode, FieldList* fl) {
+  // printf("FCK, %s, %d\n", node->name, node->num);
+  if (node->num == -1) return;
+  Def_s(child(0), mode, fl);
+  DefList_s(child(1), mode, fl);
+}
+
+void Def_s(struct ast* node, int mode, FieldList* fl) {
+  // Specifier
+  Type* type = malloc(sizeof(Type));
+  Specifier_s(child(0), type);
+  printf("Def_s: %s\n", type->typename);
+  // DecList
+  // 临时
+  // puts("fuck");
+  DecList_s(child(1), type, mode, fl);
+  // SEMI
+}
+
+void StmtList_s(struct ast* node) {
+  // printf("StmtList\n");
+  if (node->num == -1) return;
+  // Stmt
+  Stmt_s(child(0));
+  // StmtList
+  StmtList_s(child(1));
+}
+
+void Stmt_s(struct ast* node) {
+  // printf("Stmt\n");
+  if (!strcmp(child(0)->name, "Exp")) {
+    // Exp
+    Exp_s(child(0));
+    // SEMI
+  } else if (!strcmp(child(0)->name, "RETURN")) {
+    // RETURN
+    // Exp
+    Exp_s(child(1));
+    // SEMI
+  } else if (!strcmp(child(0)->name, "IF")) {
+    if (node->num == 5) {
+      // IF
+      // LP
+      // Exp
+      Exp_s(child(2));
+      // RP
+      // Stmt
+      Stmt_s(child(4));
+    } else if (node->num == 7) {
+      // IF
+      // LP
+      // Exp
+      Exp_s(child(2));
+      // RP
+      // Stmt
+      Stmt_s(child(4));
+      // ELSE
+      // Stmt
+      Stmt_s(child(6));
+    }
+  } else if (!strcmp(child(0)->name, "WHILE")) {
+    // WHILE
+    // LP
+    // Exp
+    Exp_s(child(2));
+    // RP
+    // Stmt
+    Stmt_s(child(4));
+  }
+}
+
+void Specifier_s(struct ast* node, Type* type) {
+  if (!strcmp(child(0)->name, "TYPE")) {
+    // TYPE
+    // 初始化为0，以后可改为其他值（吧）
+    if (!strcmp(child(0)->id_name, "int")) {
+      build_Type_INT(type, 0);
+    } else if (!strcmp(child(0)->id_name, "float")) {
+      build_Type_FLOAT(type, 0.0);
+    } else {
+      printf("不能辨识的类型: %s\n", child(0)->id_name);
+    }
+  } else if (!strcmp(child(0)->name, "StructSpecifier")) {
+    // StructSpecifier
+    StructSpecifier_s(child(0), type);
+  }
+}
+
+void StructSpecifier_s(struct ast* node, Type* type) {
+  if (!strcmp(child(1)->name, "OptTag")) {
+    // STRUCT
+    // OptTag
+    // 这里还没有填名字
+    OptTag_s(child(1), type);
+    // LC
+    createSymtab();
+    // DefList
+    // 用DefList_s装满这个FieldList
+    FieldList* fl = malloc(sizeof(FieldList));
+    DefList_s(child(3), 1, fl);
+    build_Type_STRUCTURE(type, fl);
+    // RC
+    dropSymtab();
+  } else {
+    //(!strcmp(child(1)->name, "Tag"))
+    printf("该写这里了");
+  }
+}
+
+void OptTag_s(struct ast* node, Type* type) {
+  if (node->num == -1) {
+    // OptTag -> empty
+    printf("该处理匿名函数了");
+  } else {
+    // OptTag -> ID
+    strcpy(type->typename, "struct ");
+    strcat(type->typename, child(0)->id_name);
+  }
+}
+
+void DecList_s(struct ast* node, Type* type, int mode, FieldList* fl) {
+  // printf("???\n");
+  if (node->num == 1) {
+    // Dec
+    Dec_s(child(0), type, mode, fl);
+  } else if (node->num == 3) {
+    // Dec
+    Dec_s(child(0), type, mode, fl);
+    // COMMA
+    // DecList
+    DecList_s(child(2), type, mode, fl);
+  }
+}
+
+void Dec_s(struct ast* node, Type* type, int mode, FieldList* fl) {
+  // VarDec
+  VarDec_s(child(0), type, mode, fl);
+}
+
+void VarDec_s(struct ast* node, Type* type, int mode, FieldList* fl) {
+  // ID
+  // printf("VarDec\n");
+  if (!strcmp(child(0)->name, "ID")) {
+    struct ast* id = child(0);
+    if (mode == 0) {
+      // From Compst
+      insertSymtab(id->id_name, type, DEFINITION);
+    } else {
+      // From StructSpecifier
+      // printf("Fuckme\n\n");
+      insertSymtab(id->id_name, type, DEFINITION);
+      build_FieldList(fl, id->id_name, type);
+    }
+  } else {
+    // VarDec LB INT RB
+    int size = child(2)->int_value;
+    Type newtype;
+    build_Type_ARRAY(&newtype, type, size);
+    // VarDec
+    VarDec_s(child(0), &newtype, mode, fl);
+  }
+}
+
+void Exp_s(struct ast* node) {
+  // printf("Exp\n");
+  if (node->num == 3 && !strcmp(child(0)->name, "Exp") &&
+      !strcmp(child(2)->name, "Exp")) {
+    // Exp
+    Exp_s(child(0));
+    // op
+    // Exp
+    Exp_s(child(2));
+  } else if (!strcmp(child(0)->name, "LP")) {
+    // LP
+    // Exp
+    Exp_s(child(1));
+    // RP
+  } else if (!strcmp(child(0)->name, "MINUS")) {
+    // UMINUS
+    // Exp
+    Exp_s(child(1));
+  } else if (!strcmp(child(0)->name, "NOT")) {
+    // NOT
+    // Exp
+    Exp_s(child(1));
+  } else if (node->num > 2 && !strcmp(child(0)->name, "ID") &&
+             !strcmp(child(1)->name, "LP")) {
+    // ID (function)
+    Type* ans_type;
+    int ans_how;
+    // printf("???\n");
+    querySymtab(child(0)->id_name, ans_type, &ans_how);
+    if (ans_how == 0)  // how == WRONG 或 type != function(void)
+      printf("标识符\"%s\"并非函数\n", child(0)->id_name);
+    if (node->num == 4) {
+      // LP
+      // Args
+      Args_s(child(2));
+      // RP
+    } else if (node->num == 3) {
+      // LP
+      // RP
+    }
+  } else if (node->num == 3 && !strcmp(child(1)->name, "LB") &&
+             !strcmp(child(3)->name, "RB")) {
+    // Exp
+    Exp_s(child(0));
+    // LB
+    Exp_s(child(2));
+    // RB
+  } else if (node->num == 3 && !strcmp(child(1)->name, "DOT")) {
+    // Exp
+    Exp_s(child(0));
+    // DOT
+    // ID
+    // 此处ID为结构体内域名
+  } else if (!strcmp(child(0)->name, "ID") && node->num == 1) {
+    Type* ans_type;
+    int ans_how;
+    // printf("ID\n");
+    querySymtab(child(0)->id_name, ans_type, &ans_how);
+    if (ans_how == 0)  // how == WRONG
+      printf("未定义的标识符: %s\n", child(0)->id_name);
+  } else if (!strcmp(child(0)->name, "INT")) {
+    // INT
+  } else if (!strcmp(child(0)->name, "FLOAT")) {
+    // FLOAT
+  }
+}
+
+void Args_s(struct ast* node) {
+  if (node->num == 1) {
+    // Exp
+    Exp_s(child(0));
+  } else if (node->num == 3) {
+    // Exp
+    Exp_s(child(0));
+    // COMMA
+    // Args
+    Args_s(child(2));
+  }
+}

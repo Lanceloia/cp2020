@@ -5,16 +5,7 @@
 
 int error_type = 0;
 
-struct ast {
-  int line, num;
-  char* name;
-  struct ast* children[8];
-  union {
-    char id_name[32];
-    int int_value;
-    float float_value;
-  };
-} * root;
+struct ast* root;
 
 void yyerror(char* msg) {
   switch (error_type) {
@@ -35,7 +26,6 @@ void yyerror(char* msg) {
 }
 
 struct ast* newnode(char* name, int num, ...) {
-  // printf("%s\n", name);
   struct ast* node = malloc(sizeof(struct ast));
 
   node->name = name;
@@ -56,11 +46,11 @@ struct ast* newnode(char* name, int num, ...) {
       struct ast* temp = va_arg(v, struct ast*);
       node->children[i] = temp;
     }
-    node->line = node->children[0]->line;
+    node->lineno = node->children[0]->lineno;
     va_end(v);
   } else {
     // Terminal or Empty
-    node->line = yylineno;
+    node->lineno = yylineno;
   }
   return node;
 }
@@ -70,7 +60,7 @@ void eval_syntax_tree(struct ast* node, int level) {
     for (int i = 0; i < level; i++) printf("  ");
   if (node->num > 0) {
     // Nonterminal
-    printf("%s (%d)\n", node->name, node->line);
+    printf("%s (%d)\n", node->name, node->lineno);
     for (int i = 0; i < node->num; i++) {
       eval_syntax_tree(node->children[i], level + 1);
     }

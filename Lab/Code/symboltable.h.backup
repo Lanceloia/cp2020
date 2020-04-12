@@ -1,6 +1,8 @@
 #ifndef SYMBOLTABLE_H
 #define SYMBOLTABLE_H
 
+#include "lexical_syntax.h"
+
 typedef struct Type Type;
 typedef struct FieldList FieldList;
 typedef struct Structure Structure;
@@ -13,9 +15,9 @@ typedef struct SymtabStk SymtabStk;
 extern void initSymtab();
 extern void createSymtab();
 extern void dropSymtab();
-extern int insertSymtab(Symbol* sb);
-extern void querySymtab(char* name, Symbol* ans_sb);
-extern void buildFieldListFromSymtab(Structure* structure);
+extern void insertSymtab(Symbol* sb);
+extern void querySymtab(Symbol* ans_sb);
+extern FieldList* buildFieldListFromSymtab();
 extern void dropFieldListAfterPush(FieldList* fl);
 extern void showSymtab();
 
@@ -23,30 +25,20 @@ extern void showSymtab();
 int type_equal(const Type* t1, const Type* t2);
 int symbol_kind_equal(const Symbol* sb1, const Symbol* sb2);
 
-/*
-void build_FieldList(FieldList* fl, char* name, Type* type);
-void build_Type_INT(Type* type, int val);
-void build_Type_FLOAT(Type* type, float val);
-void build_Type_ARRAY(Type* type, Type* array_type, int array_size);
-void build_Type_STRUCTURE(Type* type, FieldList* structure);
-*/
-
-#define MAX_NAME_LEN 32
-
-#define FUCK(n) printf("Debug[%d]\n", n);
-
 // 变量的类型
 struct Type {
   enum { _UNKNOWN, _INT, _FLOAT, _ARRAY, _STRUCTURE } kind;
   union {
     struct {
-      const Type* type;
-      // int size;
+      Type* type;
+      int size;       // 数组的大小
+      int dimension;  //数组的维度
     } array;
     struct {
       FieldList* field;
     } structure;
   };
+  char typename[MAX_NAME_LEN];
 };
 
 // 结构体名的类型
@@ -70,8 +62,9 @@ struct Symbol {
     Structure structure;
     Function function;
   };
-  char symbolname[MAX_NAME_LEN];
+  char symname[MAX_NAME_LEN];
   enum { UNDEFINE, DECLARATION, DEFINITION } dec;
+  int dec_lineno;
   // 在symtab_g中，nextsymbol指上一个同名的符号，其作用域被该符号覆盖
   // 在symtab_l中，nextsymbol指下一个不同名的符号，其作用域与该符号相同
   Symbol* nextsymbol;
@@ -79,8 +72,7 @@ struct Symbol {
 
 // 域
 struct FieldList {
-  char varname[MAX_NAME_LEN];
-  Type vartype;
+  Symbol var;
   FieldList* next;
 };
 
