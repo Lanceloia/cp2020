@@ -174,10 +174,8 @@ void ParamDec(struct ast* node) {
 
 void CompSt(struct ast* node, const Type* ret_type) {
   // CompSt -> LC DefList StmtList RC
-  CompStLC();
   DefList(node->children[1]);
   StmtList(node->children[2], ret_type);
-  CompStRC();
 }
 
 void DefList(struct ast* node) {
@@ -215,13 +213,14 @@ void Dec(struct ast* node, const Type* type) {
   else {
     // Dec -> VarDec ASSIGNOP Exp
     if (Symtab_mode() != 0) semantic_error(15, node->lineno, NULL);
-    VarDec(node->children[0], type);
-    if (!type_equal(type, Exp(node->children[2])))
+    const Type* t1 = VarDec(node->children[0], type);
+    const Type* t2 = Exp(node->children[2]);
+    if (!t1 || !t2 || !type_equal(t1, t2))
       semantic_error(5, node->lineno, NULL);
   }
 }
 
-void VarDec(struct ast* node, const Type* type) {
+const Type* VarDec(struct ast* node, const Type* type) {
   // 变量为左值
   if (type->tkind == T_INT) type = LType_INT();
   if (type->tkind == T_FLOAT) type = LType_FLOAT();
@@ -255,6 +254,9 @@ void VarDec(struct ast* node, const Type* type) {
   sb->pvar->vtype = type;
 
   Insert_Symtab(sb);
+
+  // 返回最终定义变量用的类型
+  return type;
 }
 
 void StmtList(struct ast* node, const Type* ret_type) {
@@ -273,9 +275,9 @@ void Stmt(struct ast* node, const Type* ret_type) {
     // Stmt -> Exp SEMI
     Exp(node->children[0]);
   } else if (!strcmp(node->children[0]->name, "CompSt")) {
-    CompStLC();
+    DotCompSt();
     CompSt(node->children[0], ret_type);
-    CompStRC();
+    CompStDot();
   } else if (!strcmp(node->children[0]->name, "RETURN")) {
     // Stmt -> RETURN Exp SEMI
     // 判断RETURN的类型和函数是否相容

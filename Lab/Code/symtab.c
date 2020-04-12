@@ -121,8 +121,12 @@ int Insert_Symtab(Symbol* sb) {
           // 新定义覆盖旧声明
           other->pfunc = sb->pfunc;
         // 冲突: 19
-        if (!eq) return semantic_error(19, sb->dec_lineno, sb->sbname);
+        if (!eq)
+          return semantic_error(19, sb->dec_lineno, sb->sbname);
+        else
+          return 0;
       }
+      assert(0);
     }
   } else if (sb->skind == S_STRUCTNAME) {
     if (other = Query_Symtab(sb->sbname))
@@ -194,8 +198,8 @@ void FunDecDotCompSt(Symbol* sb) {
 }
 
 void FunDecCompStDot() { Symtab_Pop(); }
-void CompStLC() { Symtab_Push(); }
-void CompStRC() { Symtab_Pop(); }
+void DotCompSt() { Symtab_Push(); }
+void CompStDot() { Symtab_Pop(); }
 
 void StructSpecifierLC(Symbol* sb) {
   sb->pstruct->this_symtab =

@@ -26,7 +26,7 @@ void Stmt(struct ast* node, const Type* ret_type);
 
 void DecList(struct ast* node, const Type* type);
 void Dec(struct ast* node, const Type* type);
-void VarDec(struct ast* node, const Type* type);
+const Type* VarDec(struct ast* node, const Type* type);
 const Type* Exp(struct ast* node);
 int Args(struct ast* node, FieldList* parameter);
 

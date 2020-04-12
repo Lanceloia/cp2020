@@ -14,46 +14,57 @@ typedef struct Symtab Symtab;
 #define DEBUG
 
 /*
-根据假设，函数、
-符号表是多态符号的表，使用存储链表的函数栈的形式
-符号表有两种形态，0和k（k>0)，k表示目前位于嵌套中的第k层
-    （0）普通定义：作用域为栈帧结束
-    （k）特殊定义：作用域与上一个栈帧相同
+（一）符号表概述：
 
-遇到FunDec的LP时：push符号表，模式不变
-遇到FunDec的RP时：pop符号表，将表中符号填入FunDec的参数列表，销毁表中符号
+符号表为多态的表
+-- 根据skind确定具体的符号类型
+有两个坐标
+-- 局部作用域的变化引起竖直方向(v)变化
+-- 结构体的定义过程引起水平方向(h)变化
 
-遇到FunDec的LC时：push符号表，将FunDec的参数列表插入新符号表，模式不变
-遇到CompSt的LC时：push符号表，模式不变
-遇到StructSpecifier的LC时：记录上一个表的位置，create另一个符号表，模式+1
+遇到FunDec的LP时：FunDecLP()
+-- v + 1
+遇到FunDec的RP时：FunDecRP()
+-- v - 1, 将表中符号填入FunDec的参数列表，销毁表中符号
 
-遇到FunDec的RC时：pop符号表，销毁表中符号
-遇到CompSt的RC时：pop符号表，销毁表中符号
-遇到StructSpecifier的RC时：回到上一个表的位置，模式-1
+遇到FunDec的CompSt的LC时：FunDecDotCompSt()
+-- v + 1, VarList插入新符号表
+遇到FunDec的CompSt的RC时：FunDecCompStDot()
+-- v - 1, 销毁表中符号
 
-                        //Symtab_Init(), mode == 0
-struct A{       //StructLC("A"), mode == 1, LC包含了insert功能
-    int a;          //insert("a", var, int)
-    struct B{   //StructLC("B"), mode == 2
-        int b;      //insert("b", var, int)
-    }E;               //StructRC(), mode == 1
-                        //insert("B", structname)
-                        //insert("E", var, "B");
-    int c;          //insert("c", var, int)
-} ;                     //StructRC(), mode == 0
+遇到StructSpecifier的LC时：StructSpecifierLC()
+-- h + 1
+遇到StructSpecifier的RC时：StructSpecifierRC()
+-- h - 1, 不能销毁表中的符号
 
-int main(){   //pushSymtab();
-    struct A s; //query("A"), ans == structname, OK
-                        //buildField("s", "A"->this_symtab)
-                        //insert("s", var, struct)
-    s.a;              //在s的Field中查询a
-    s.E.b;          //左结合，先在s的Field中查询E
-                        //然后在s.E的Field中查询b
-    struct B{   //StructLC("B")
-        int b;      //...
-        int c;      //...
-    } t;               //...
-}                       //popSymtab();
+遇到普通CompSt的LC时：DotComSt()
+-- v + 1, 销毁表中符号
+遇到普通CompSt的RC时：CompStDot()
+-- v - 1, 销毁表中符号
+
+（二）定义新符号时：
+
+--- 新符号是变量
+------ 查看局部作用域（同坐标的表）中是否有重定义的符号
+--------- 有：重定义错误3
+--------- 无： 查看全局作用域中是否有重定义的符号
+------------ 有且不是变量：重定义错误3
+--- 新符号是结构体名
+------ 查看全局作用域中是否有重定义的符号
+--------- 有：重定义错误16
+--- 新符号是函数名
+------ 查看全局作用域中是否有重定义的符号
+--------- 有：assert(该符号也是函数名)
+------------ 二者都是函数名定义：重定义错误4
+------------ 二者至少有一是声明：检查冲突
+--------------- 冲突：声明冲突错误19
+--------------- 不冲突：若新符号是定义，则覆盖旧符号
+
+（三）使用某符号时：
+
+--- 查看全局作用域中是否有该符号
+------ 有：检查类型是否与用途一致
+------ 无：未定义错误
 */
 
 // 外部接口
@@ -64,8 +75,8 @@ extern void FunDecLP();
 extern void FunDecRP(Symbol* sb);
 extern void FunDecDotCompSt(Symbol* sb);
 extern void FunDecCompStDot();
-extern void CompStLC();
-extern void CompStRC();
+extern void DotCompSt();
+extern void CompStDot();
 extern void StructSpecifierLC(Symbol* sb);
 extern void StructSpecifierRC();
 extern Type* BuildStructure(Symtab* st, char* stname);
