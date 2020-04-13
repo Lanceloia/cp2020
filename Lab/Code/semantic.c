@@ -21,12 +21,14 @@ void Program(struct ast* node) {
 }
 
 void ExtDefList(struct ast* node) {
-  if (node->num == -1)
-    // ExtDefList -> epsilon
-    return;
-  // ExtDefList -> ExtDef ExtDefList
-  ExtDef(node->children[0]);      // ExtDef
-  ExtDefList(node->children[1]);  // ExtDefList
+  // 右递归改迭代
+  while (node->num != -1) {
+    // ExtDefList -> ExtDef ExtDefList
+    ExtDef(node->children[0]);
+    node = node->children[1];
+  }
+  // ExtDefList -> empty
+  return;
 }
 
 void ExtDef(struct ast* node) {
@@ -65,13 +67,17 @@ void ExtDef(struct ast* node) {
 }
 
 void ExtDecList(struct ast* node, const Type* type) {
-  if (node->num == 1) {
-    // ExtDecList -> VarDec
+  // 右递归改迭代
+  while (TRUE) {
     VarDec(node->children[0], type);
-  } else {
-    // ExtDecList -> VarDec COMMA ExtDecList
-    VarDec(node->children[0], type);
-    ExtDecList(node->children[2], type);
+
+    if (node->num == 1) {
+      // ExtDecList -> VarDec .
+      break;
+    } else {
+      // ExtDecList -> VarDec . COMMA ExtDecList
+      node = node->children[2];
+    }
   }
 }
 
@@ -100,19 +106,23 @@ const Type* StructSpecifier(struct ast* node) {
     st->dec_lineno = node->lineno;
     st->pstruct = malloc(sizeof(StructName));
 
+    st->pstruct->stdec_kind = ST_UNDEFINED;
+
     // 插入
     Insert_Symtab(st);
     StructSpecifierLC(st);
     DefList(node->children[3]);
     StructSpecifierRC();
 
+    st->pstruct->stdec_kind = ST_DEFINED;
     return BuildStructure(st->pstruct->this_symtab, stname);
   } else {
     // StructSpecifier -> STRUCT Tag
     Tag(node->children[1], stname);
 
     Symbol* st = Query_Symtab(stname);
-    if (!st) {
+    if (!st || st->skind != S_STRUCTNAME ||
+        st->pstruct->stdec_kind != ST_DEFINED) {
       semantic_error(17, node->lineno, stname);
       return LType_UKST();
     }
@@ -156,13 +166,16 @@ Symbol* FunDec(struct ast* node) {
 }
 
 void VarList(struct ast* node) {
-  if (node->num == 1)
-    // VarList -> ParamDec
+  // 右递归改迭代
+  while (TRUE) {
     ParamDec(node->children[0]);
-  else {
-    // VarList -> ParamDec COMMA VarList
-    ParamDec(node->children[0]);
-    VarList(node->children[2]);
+    if (node->num == 1) {
+      // VarList -> ParamDec .
+      break;
+    } else {
+      // VarList -> ParamDec .  COMMA VarList
+      node = node->children[2];
+    }
   }
 }
 
@@ -179,13 +192,13 @@ void CompSt(struct ast* node, const Type* ret_type) {
 }
 
 void DefList(struct ast* node) {
-  if (node->num != -1) {
+  // 右递归改迭代
+  while (node->num != -1) {
     // DefList -> Def DefList
     Def(node->children[0]);
-    DefList(node->children[1]);
-  } else {
-    // DefList -> empty
+    node = node->children[1];
   }
+  // DefList -> empty
 }
 
 void Def(struct ast* node) {
@@ -195,13 +208,15 @@ void Def(struct ast* node) {
 }
 
 void DecList(struct ast* node, const Type* type) {
-  if (node->num == 1) {
-    // DecList -> Dec
+  // 右递归改迭代
+  while (TRUE) {
     Dec(node->children[0], type);
-  } else {
-    // DecList -> Dec COMMA DecList
-    Dec(node->children[0], type);
-    DecList(node->children[2], type);
+    if (node->num != 1) {
+      // DecList -> Dec . DecList
+      node = node->children[2];
+    } else
+      // DecList -> Dec .
+      break;
   }
 }
 
@@ -260,14 +275,13 @@ const Type* VarDec(struct ast* node, const Type* type) {
 }
 
 void StmtList(struct ast* node, const Type* ret_type) {
-  if (node->num != -1) {
+  // 右递归改迭代
+  while (node->num != -1) {
     // StmtList -> Stmt StmtList
     Stmt(node->children[0], ret_type);
-    StmtList(node->children[1], ret_type);
-  } else {
-    // StmtList -> empty
-    return;
+    node = node->children[1];
   }
+  // StmtList -> empty
 }
 
 void Stmt(struct ast* node, const Type* ret_type) {
@@ -449,25 +463,25 @@ const Type* Exp(struct ast* node) {
 
 int Args(struct ast* node, FieldList* parameter) {
   assert(parameter->sym->skind == S_VARIABLE);
-  if (node->num == 1) {
-    // Args -> Exp
-    // 剩余的参数多于一个
-    if (parameter->next != NULL) return 1;
-    // 检查最后一个参数的类型与表达式的类型是否相容
-    Var* var = parameter->sym->pvar;
-    const Type* type = Exp(node->children[0]);
+  // 右递归改迭代
+  const Var* var;
+  const Type* type;
+
+  while (TRUE) {
+    var = parameter->sym->pvar;
+    type = Exp(node->children[0]);
     if (!type || !type_equal(type, var->vtype)) return 1;
-    return 0;
-  } else {
-    // Args -> Exp COMMA Args
-    // 没有剩余的参数
-    if (parameter->next == NULL) return 1;
-    // 检查当前参数的类型与表达式的类型是否相容
-    Var* var = parameter->sym->pvar;
-    const Type* type = Exp(node->children[0]);
-    if (!type || !type_equal(type, var->vtype)) return 1;
-    // 转移到下一个参数
-    return Args(node->children[2], parameter->next);
+
+    if (node->num == 3 && parameter->next != NULL) {
+      // Args -> Exp COMMA Args
+      // 继续分析
+      node = node->children[2];
+      parameter = parameter->next;
+    } else {
+      // Args -> Exp
+      // 检查是否是最后一个参数
+      return !(node->num == 1 && parameter->next == NULL);
+    }
   }
 }
 

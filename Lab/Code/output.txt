@@ -1,0 +1,507 @@
+Error type 17 at Line 57: Undefined structure "B". 
+Error type 17 at Line 58: Undefined structure "C". 
+Error type 17 at Line 59: Undefined structure "D". 
+Error type 17 at Line 60: Undefined structure "E". 
+Error type 17 at Line 61: Undefined structure "F". 
+Error type 17 at Line 62: Undefined structure "G". 
+Error type 17 at Line 67: Undefined structure "H". 
+Error type 17 at Line 68: Undefined structure "I". 
+Error type 17 at Line 69: Undefined structure "J". 
+Error type 17 at Line 70: Undefined structure "K". 
+Error type 17 at Line 71: Undefined structure "L". 
+Error type 17 at Line 72: Undefined structure "M". 
+Error type 17 at Line 73: Undefined structure "N". 
+Error type 17 at Line 78: Undefined structure "O". 
+Error type 17 at Line 79: Undefined structure "P". 
+Error type 17 at Line 80: Undefined structure "Q". 
+Error type 17 at Line 81: Undefined structure "R". 
+Error type 17 at Line 82: Undefined structure "S". 
+Error type 17 at Line 83: Undefined structure "T". 
+Error type 17 at Line 88: Undefined structure "U". 
+Error type 17 at Line 89: Undefined structure "V". 
+Error type 17 at Line 90: Undefined structure "W". 
+Error type 17 at Line 91: Undefined structure "X". 
+Error type 17 at Line 92: Undefined structure "Y". 
+Error type 17 at Line 93: Undefined structure "Z". 
+Error type 17 at Line 101: Undefined structure "B". 
+Error type 17 at Line 102: Undefined structure "C". 
+Error type 17 at Line 103: Undefined structure "D". 
+Error type 17 at Line 104: Undefined structure "E". 
+Error type 17 at Line 105: Undefined structure "F". 
+Error type 17 at Line 106: Undefined structure "G". 
+Error type 17 at Line 108: Undefined structure "H". 
+Error type 17 at Line 109: Undefined structure "I". 
+Error type 17 at Line 110: Undefined structure "J". 
+Error type 17 at Line 111: Undefined structure "K". 
+Error type 17 at Line 112: Undefined structure "L". 
+Error type 17 at Line 113: Undefined structure "M". 
+Error type 17 at Line 114: Undefined structure "N". 
+Error type 17 at Line 116: Undefined structure "O". 
+Error type 17 at Line 117: Undefined structure "P". 
+Error type 17 at Line 118: Undefined structure "Q". 
+Error type 17 at Line 119: Undefined structure "R". 
+Error type 17 at Line 120: Undefined structure "S". 
+Error type 17 at Line 121: Undefined structure "T". 
+Error type 14 at Line 182: There is no dominant name "c". 
+Error type 13 at Line 182: Illegal use of ".". 
+Error type 13 at Line 182: Illegal use of ".". 
+Error type 13 at Line 182: Illegal use of ".". 
+Error type 13 at Line 182: Illegal use of ".". 
+Error type 13 at Line 182: Illegal use of ".". 
+Error type 13 at Line 182: Illegal use of ".". 
+Error type 13 at Line 182: Illegal use of ".". 
+Error type 13 at Line 182: Illegal use of ".". 
+Error type 13 at Line 182: Illegal use of ".". 
+Error type 13 at Line 182: Illegal use of ".". 
+Error type 13 at Line 182: Illegal use of ".". 
+Error type 13 at Line 182: Illegal use of ".". 
+Error type 13 at Line 182: Illegal use of ".". 
+Error type 13 at Line 182: Illegal use of ".". 
+Error type 13 at Line 182: Illegal use of ".". 
+Error type 13 at Line 182: Illegal use of ".". 
+Error type 13 at Line 182: Illegal use of ".". 
+Error type 13 at Line 182: Illegal use of ".". 
+Error type 13 at Line 182: Illegal use of ".". 
+Error type 13 at Line 182: Illegal use of ".". 
+Error type 13 at Line 182: Illegal use of ".". 
+Error type 13 at Line 182: Illegal use of ".". 
+Error type 13 at Line 182: Illegal use of ".". 
+Error type 13 at Line 182: Illegal use of ".". 
+Error type 14 at Line 183: There is no dominant name "d". 
+Error type 13 at Line 183: Illegal use of ".". 
+Error type 13 at Line 183: Illegal use of ".". 
+Error type 13 at Line 183: Illegal use of ".". 
+Error type 13 at Line 183: Illegal use of ".". 
+Error type 13 at Line 183: Illegal use of ".". 
+Error type 13 at Line 183: Illegal use of ".". 
+Error type 13 at Line 183: Illegal use of ".". 
+Error type 13 at Line 183: Illegal use of ".". 
+Error type 13 at Line 183: Illegal use of ".". 
+Error type 13 at Line 183: Illegal use of ".". 
+Error type 13 at Line 183: Illegal use of ".". 
+Error type 13 at Line 183: Illegal use of ".". 
+Error type 13 at Line 183: Illegal use of ".". 
+Error type 13 at Line 183: Illegal use of ".". 
+Error type 13 at Line 183: Illegal use of ".". 
+Error type 13 at Line 183: Illegal use of ".". 
+Error type 13 at Line 183: Illegal use of ".". 
+Error type 13 at Line 183: Illegal use of ".". 
+Error type 13 at Line 183: Illegal use of ".". 
+Error type 13 at Line 183: Illegal use of ".". 
+Error type 13 at Line 183: Illegal use of ".". 
+Error type 13 at Line 183: Illegal use of ".". 
+Error type 13 at Line 183: Illegal use of ".". 
+Error type 14 at Line 184: There is no dominant name "e". 
+Error type 13 at Line 184: Illegal use of ".". 
+Error type 13 at Line 184: Illegal use of ".". 
+Error type 13 at Line 184: Illegal use of ".". 
+Error type 13 at Line 184: Illegal use of ".". 
+Error type 13 at Line 184: Illegal use of ".". 
+Error type 13 at Line 184: Illegal use of ".". 
+Error type 13 at Line 184: Illegal use of ".". 
+Error type 13 at Line 184: Illegal use of ".". 
+Error type 13 at Line 184: Illegal use of ".". 
+Error type 13 at Line 184: Illegal use of ".". 
+Error type 13 at Line 184: Illegal use of ".". 
+Error type 13 at Line 184: Illegal use of ".". 
+Error type 13 at Line 184: Illegal use of ".". 
+Error type 13 at Line 184: Illegal use of ".". 
+Error type 13 at Line 184: Illegal use of ".". 
+Error type 13 at Line 184: Illegal use of ".". 
+Error type 13 at Line 184: Illegal use of ".". 
+Error type 13 at Line 184: Illegal use of ".". 
+Error type 13 at Line 184: Illegal use of ".". 
+Error type 13 at Line 184: Illegal use of ".". 
+Error type 13 at Line 184: Illegal use of ".". 
+Error type 13 at Line 184: Illegal use of ".". 
+Error type 14 at Line 185: There is no dominant name "f". 
+Error type 13 at Line 185: Illegal use of ".". 
+Error type 13 at Line 185: Illegal use of ".". 
+Error type 13 at Line 185: Illegal use of ".". 
+Error type 13 at Line 185: Illegal use of ".". 
+Error type 13 at Line 185: Illegal use of ".". 
+Error type 13 at Line 185: Illegal use of ".". 
+Error type 13 at Line 185: Illegal use of ".". 
+Error type 13 at Line 185: Illegal use of ".". 
+Error type 13 at Line 185: Illegal use of ".". 
+Error type 13 at Line 185: Illegal use of ".". 
+Error type 13 at Line 185: Illegal use of ".". 
+Error type 13 at Line 185: Illegal use of ".". 
+Error type 13 at Line 185: Illegal use of ".". 
+Error type 13 at Line 185: Illegal use of ".". 
+Error type 13 at Line 185: Illegal use of ".". 
+Error type 13 at Line 185: Illegal use of ".". 
+Error type 13 at Line 185: Illegal use of ".". 
+Error type 13 at Line 185: Illegal use of ".". 
+Error type 13 at Line 185: Illegal use of ".". 
+Error type 13 at Line 185: Illegal use of ".". 
+Error type 13 at Line 185: Illegal use of ".". 
+Error type 14 at Line 186: There is no dominant name "g". 
+Error type 13 at Line 186: Illegal use of ".". 
+Error type 13 at Line 186: Illegal use of ".". 
+Error type 13 at Line 186: Illegal use of ".". 
+Error type 13 at Line 186: Illegal use of ".". 
+Error type 13 at Line 186: Illegal use of ".". 
+Error type 13 at Line 186: Illegal use of ".". 
+Error type 13 at Line 186: Illegal use of ".". 
+Error type 13 at Line 186: Illegal use of ".". 
+Error type 13 at Line 186: Illegal use of ".". 
+Error type 13 at Line 186: Illegal use of ".". 
+Error type 13 at Line 186: Illegal use of ".". 
+Error type 13 at Line 186: Illegal use of ".". 
+Error type 13 at Line 186: Illegal use of ".". 
+Error type 13 at Line 186: Illegal use of ".". 
+Error type 13 at Line 186: Illegal use of ".". 
+Error type 13 at Line 186: Illegal use of ".". 
+Error type 13 at Line 186: Illegal use of ".". 
+Error type 13 at Line 186: Illegal use of ".". 
+Error type 13 at Line 186: Illegal use of ".". 
+Error type 13 at Line 186: Illegal use of ".". 
+Error type 14 at Line 187: There is no dominant name "h". 
+Error type 13 at Line 187: Illegal use of ".". 
+Error type 13 at Line 187: Illegal use of ".". 
+Error type 13 at Line 187: Illegal use of ".". 
+Error type 13 at Line 187: Illegal use of ".". 
+Error type 13 at Line 187: Illegal use of ".". 
+Error type 13 at Line 187: Illegal use of ".". 
+Error type 13 at Line 187: Illegal use of ".". 
+Error type 13 at Line 187: Illegal use of ".". 
+Error type 13 at Line 187: Illegal use of ".". 
+Error type 13 at Line 187: Illegal use of ".". 
+Error type 13 at Line 187: Illegal use of ".". 
+Error type 13 at Line 187: Illegal use of ".". 
+Error type 13 at Line 187: Illegal use of ".". 
+Error type 13 at Line 187: Illegal use of ".". 
+Error type 13 at Line 187: Illegal use of ".". 
+Error type 13 at Line 187: Illegal use of ".". 
+Error type 13 at Line 187: Illegal use of ".". 
+Error type 13 at Line 187: Illegal use of ".". 
+Error type 13 at Line 187: Illegal use of ".". 
+Error type 14 at Line 191: There is no dominant name "c". 
+Error type 13 at Line 191: Illegal use of ".". 
+Error type 13 at Line 191: Illegal use of ".". 
+Error type 13 at Line 191: Illegal use of ".". 
+Error type 13 at Line 191: Illegal use of ".". 
+Error type 13 at Line 191: Illegal use of ".". 
+Error type 13 at Line 191: Illegal use of ".". 
+Error type 13 at Line 191: Illegal use of ".". 
+Error type 13 at Line 191: Illegal use of ".". 
+Error type 13 at Line 191: Illegal use of ".". 
+Error type 13 at Line 191: Illegal use of ".". 
+Error type 13 at Line 191: Illegal use of ".". 
+Error type 13 at Line 191: Illegal use of ".". 
+Error type 13 at Line 191: Illegal use of ".". 
+Error type 13 at Line 191: Illegal use of ".". 
+Error type 13 at Line 191: Illegal use of ".". 
+Error type 13 at Line 191: Illegal use of ".". 
+Error type 13 at Line 191: Illegal use of ".". 
+Error type 13 at Line 191: Illegal use of ".". 
+Error type 13 at Line 191: Illegal use of ".". 
+Error type 13 at Line 191: Illegal use of ".". 
+Error type 13 at Line 191: Illegal use of ".". 
+Error type 13 at Line 191: Illegal use of ".". 
+Error type 13 at Line 191: Illegal use of ".". 
+Error type 13 at Line 191: Illegal use of ".". 
+Error type 14 at Line 192: There is no dominant name "d". 
+Error type 13 at Line 192: Illegal use of ".". 
+Error type 13 at Line 192: Illegal use of ".". 
+Error type 13 at Line 192: Illegal use of ".". 
+Error type 13 at Line 192: Illegal use of ".". 
+Error type 13 at Line 192: Illegal use of ".". 
+Error type 13 at Line 192: Illegal use of ".". 
+Error type 13 at Line 192: Illegal use of ".". 
+Error type 13 at Line 192: Illegal use of ".". 
+Error type 13 at Line 192: Illegal use of ".". 
+Error type 13 at Line 192: Illegal use of ".". 
+Error type 13 at Line 192: Illegal use of ".". 
+Error type 13 at Line 192: Illegal use of ".". 
+Error type 13 at Line 192: Illegal use of ".". 
+Error type 13 at Line 192: Illegal use of ".". 
+Error type 13 at Line 192: Illegal use of ".". 
+Error type 13 at Line 192: Illegal use of ".". 
+Error type 13 at Line 192: Illegal use of ".". 
+Error type 13 at Line 192: Illegal use of ".". 
+Error type 13 at Line 192: Illegal use of ".". 
+Error type 13 at Line 192: Illegal use of ".". 
+Error type 13 at Line 192: Illegal use of ".". 
+Error type 13 at Line 192: Illegal use of ".". 
+Error type 13 at Line 192: Illegal use of ".". 
+Error type 14 at Line 193: There is no dominant name "e". 
+Error type 13 at Line 193: Illegal use of ".". 
+Error type 13 at Line 193: Illegal use of ".". 
+Error type 13 at Line 193: Illegal use of ".". 
+Error type 13 at Line 193: Illegal use of ".". 
+Error type 13 at Line 193: Illegal use of ".". 
+Error type 13 at Line 193: Illegal use of ".". 
+Error type 13 at Line 193: Illegal use of ".". 
+Error type 13 at Line 193: Illegal use of ".". 
+Error type 13 at Line 193: Illegal use of ".". 
+Error type 13 at Line 193: Illegal use of ".". 
+Error type 13 at Line 193: Illegal use of ".". 
+Error type 13 at Line 193: Illegal use of ".". 
+Error type 13 at Line 193: Illegal use of ".". 
+Error type 13 at Line 193: Illegal use of ".". 
+Error type 13 at Line 193: Illegal use of ".". 
+Error type 13 at Line 193: Illegal use of ".". 
+Error type 13 at Line 193: Illegal use of ".". 
+Error type 13 at Line 193: Illegal use of ".". 
+Error type 13 at Line 193: Illegal use of ".". 
+Error type 13 at Line 193: Illegal use of ".". 
+Error type 13 at Line 193: Illegal use of ".". 
+Error type 13 at Line 193: Illegal use of ".". 
+Error type 14 at Line 194: There is no dominant name "f". 
+Error type 13 at Line 194: Illegal use of ".". 
+Error type 13 at Line 194: Illegal use of ".". 
+Error type 13 at Line 194: Illegal use of ".". 
+Error type 13 at Line 194: Illegal use of ".". 
+Error type 13 at Line 194: Illegal use of ".". 
+Error type 13 at Line 194: Illegal use of ".". 
+Error type 13 at Line 194: Illegal use of ".". 
+Error type 13 at Line 194: Illegal use of ".". 
+Error type 13 at Line 194: Illegal use of ".". 
+Error type 13 at Line 194: Illegal use of ".". 
+Error type 13 at Line 194: Illegal use of ".". 
+Error type 13 at Line 194: Illegal use of ".". 
+Error type 13 at Line 194: Illegal use of ".". 
+Error type 13 at Line 194: Illegal use of ".". 
+Error type 13 at Line 194: Illegal use of ".". 
+Error type 13 at Line 194: Illegal use of ".". 
+Error type 13 at Line 194: Illegal use of ".". 
+Error type 13 at Line 194: Illegal use of ".". 
+Error type 13 at Line 194: Illegal use of ".". 
+Error type 13 at Line 194: Illegal use of ".". 
+Error type 13 at Line 194: Illegal use of ".". 
+Error type 14 at Line 195: There is no dominant name "g". 
+Error type 13 at Line 195: Illegal use of ".". 
+Error type 13 at Line 195: Illegal use of ".". 
+Error type 13 at Line 195: Illegal use of ".". 
+Error type 13 at Line 195: Illegal use of ".". 
+Error type 13 at Line 195: Illegal use of ".". 
+Error type 13 at Line 195: Illegal use of ".". 
+Error type 13 at Line 195: Illegal use of ".". 
+Error type 13 at Line 195: Illegal use of ".". 
+Error type 13 at Line 195: Illegal use of ".". 
+Error type 13 at Line 195: Illegal use of ".". 
+Error type 13 at Line 195: Illegal use of ".". 
+Error type 13 at Line 195: Illegal use of ".". 
+Error type 13 at Line 195: Illegal use of ".". 
+Error type 13 at Line 195: Illegal use of ".". 
+Error type 13 at Line 195: Illegal use of ".". 
+Error type 13 at Line 195: Illegal use of ".". 
+Error type 13 at Line 195: Illegal use of ".". 
+Error type 13 at Line 195: Illegal use of ".". 
+Error type 13 at Line 195: Illegal use of ".". 
+Error type 13 at Line 195: Illegal use of ".". 
+Error type 14 at Line 196: There is no dominant name "h". 
+Error type 13 at Line 196: Illegal use of ".". 
+Error type 13 at Line 196: Illegal use of ".". 
+Error type 13 at Line 196: Illegal use of ".". 
+Error type 13 at Line 196: Illegal use of ".". 
+Error type 13 at Line 196: Illegal use of ".". 
+Error type 13 at Line 196: Illegal use of ".". 
+Error type 13 at Line 196: Illegal use of ".". 
+Error type 13 at Line 196: Illegal use of ".". 
+Error type 13 at Line 196: Illegal use of ".". 
+Error type 13 at Line 196: Illegal use of ".". 
+Error type 13 at Line 196: Illegal use of ".". 
+Error type 13 at Line 196: Illegal use of ".". 
+Error type 13 at Line 196: Illegal use of ".". 
+Error type 13 at Line 196: Illegal use of ".". 
+Error type 13 at Line 196: Illegal use of ".". 
+Error type 13 at Line 196: Illegal use of ".". 
+Error type 13 at Line 196: Illegal use of ".". 
+Error type 13 at Line 196: Illegal use of ".". 
+Error type 13 at Line 196: Illegal use of ".". 
+Error type 14 at Line 197: There is no dominant name "i". 
+Error type 13 at Line 197: Illegal use of ".". 
+Error type 13 at Line 197: Illegal use of ".". 
+Error type 13 at Line 197: Illegal use of ".". 
+Error type 13 at Line 197: Illegal use of ".". 
+Error type 13 at Line 197: Illegal use of ".". 
+Error type 13 at Line 197: Illegal use of ".". 
+Error type 13 at Line 197: Illegal use of ".". 
+Error type 13 at Line 197: Illegal use of ".". 
+Error type 13 at Line 197: Illegal use of ".". 
+Error type 13 at Line 197: Illegal use of ".". 
+Error type 13 at Line 197: Illegal use of ".". 
+Error type 13 at Line 197: Illegal use of ".". 
+Error type 13 at Line 197: Illegal use of ".". 
+Error type 13 at Line 197: Illegal use of ".". 
+Error type 13 at Line 197: Illegal use of ".". 
+Error type 13 at Line 197: Illegal use of ".". 
+Error type 13 at Line 197: Illegal use of ".". 
+Error type 13 at Line 197: Illegal use of ".". 
+Error type 14 at Line 198: There is no dominant name "j". 
+Error type 13 at Line 198: Illegal use of ".". 
+Error type 13 at Line 198: Illegal use of ".". 
+Error type 13 at Line 198: Illegal use of ".". 
+Error type 13 at Line 198: Illegal use of ".". 
+Error type 13 at Line 198: Illegal use of ".". 
+Error type 13 at Line 198: Illegal use of ".". 
+Error type 13 at Line 198: Illegal use of ".". 
+Error type 13 at Line 198: Illegal use of ".". 
+Error type 13 at Line 198: Illegal use of ".". 
+Error type 13 at Line 198: Illegal use of ".". 
+Error type 13 at Line 198: Illegal use of ".". 
+Error type 13 at Line 198: Illegal use of ".". 
+Error type 13 at Line 198: Illegal use of ".". 
+Error type 13 at Line 198: Illegal use of ".". 
+Error type 13 at Line 198: Illegal use of ".". 
+Error type 13 at Line 198: Illegal use of ".". 
+Error type 13 at Line 198: Illegal use of ".". 
+Error type 14 at Line 199: There is no dominant name "k". 
+Error type 13 at Line 199: Illegal use of ".". 
+Error type 13 at Line 199: Illegal use of ".". 
+Error type 13 at Line 199: Illegal use of ".". 
+Error type 13 at Line 199: Illegal use of ".". 
+Error type 13 at Line 199: Illegal use of ".". 
+Error type 13 at Line 199: Illegal use of ".". 
+Error type 13 at Line 199: Illegal use of ".". 
+Error type 13 at Line 199: Illegal use of ".". 
+Error type 13 at Line 199: Illegal use of ".". 
+Error type 13 at Line 199: Illegal use of ".". 
+Error type 13 at Line 199: Illegal use of ".". 
+Error type 13 at Line 199: Illegal use of ".". 
+Error type 13 at Line 199: Illegal use of ".". 
+Error type 13 at Line 199: Illegal use of ".". 
+Error type 13 at Line 199: Illegal use of ".". 
+Error type 13 at Line 199: Illegal use of ".". 
+Error type 14 at Line 200: There is no dominant name "l". 
+Error type 13 at Line 200: Illegal use of ".". 
+Error type 13 at Line 200: Illegal use of ".". 
+Error type 13 at Line 200: Illegal use of ".". 
+Error type 13 at Line 200: Illegal use of ".". 
+Error type 13 at Line 200: Illegal use of ".". 
+Error type 13 at Line 200: Illegal use of ".". 
+Error type 13 at Line 200: Illegal use of ".". 
+Error type 13 at Line 200: Illegal use of ".". 
+Error type 13 at Line 200: Illegal use of ".". 
+Error type 13 at Line 200: Illegal use of ".". 
+Error type 13 at Line 200: Illegal use of ".". 
+Error type 13 at Line 200: Illegal use of ".". 
+Error type 13 at Line 200: Illegal use of ".". 
+Error type 13 at Line 200: Illegal use of ".". 
+Error type 13 at Line 200: Illegal use of ".". 
+Error type 14 at Line 201: There is no dominant name "m". 
+Error type 13 at Line 201: Illegal use of ".". 
+Error type 13 at Line 201: Illegal use of ".". 
+Error type 13 at Line 201: Illegal use of ".". 
+Error type 13 at Line 201: Illegal use of ".". 
+Error type 13 at Line 201: Illegal use of ".". 
+Error type 13 at Line 201: Illegal use of ".". 
+Error type 13 at Line 201: Illegal use of ".". 
+Error type 13 at Line 201: Illegal use of ".". 
+Error type 13 at Line 201: Illegal use of ".". 
+Error type 13 at Line 201: Illegal use of ".". 
+Error type 13 at Line 201: Illegal use of ".". 
+Error type 13 at Line 201: Illegal use of ".". 
+Error type 13 at Line 201: Illegal use of ".". 
+Error type 13 at Line 201: Illegal use of ".". 
+Error type 14 at Line 202: There is no dominant name "n". 
+Error type 13 at Line 202: Illegal use of ".". 
+Error type 13 at Line 202: Illegal use of ".". 
+Error type 13 at Line 202: Illegal use of ".". 
+Error type 13 at Line 202: Illegal use of ".". 
+Error type 13 at Line 202: Illegal use of ".". 
+Error type 13 at Line 202: Illegal use of ".". 
+Error type 13 at Line 202: Illegal use of ".". 
+Error type 13 at Line 202: Illegal use of ".". 
+Error type 13 at Line 202: Illegal use of ".". 
+Error type 13 at Line 202: Illegal use of ".". 
+Error type 13 at Line 202: Illegal use of ".". 
+Error type 13 at Line 202: Illegal use of ".". 
+Error type 13 at Line 202: Illegal use of ".". 
+Error type 14 at Line 203: There is no dominant name "o". 
+Error type 13 at Line 203: Illegal use of ".". 
+Error type 13 at Line 203: Illegal use of ".". 
+Error type 13 at Line 203: Illegal use of ".". 
+Error type 13 at Line 203: Illegal use of ".". 
+Error type 13 at Line 203: Illegal use of ".". 
+Error type 13 at Line 203: Illegal use of ".". 
+Error type 13 at Line 203: Illegal use of ".". 
+Error type 13 at Line 203: Illegal use of ".". 
+Error type 13 at Line 203: Illegal use of ".". 
+Error type 13 at Line 203: Illegal use of ".". 
+Error type 13 at Line 203: Illegal use of ".". 
+Error type 13 at Line 203: Illegal use of ".". 
+Error type 14 at Line 205: There is no dominant name "p". 
+Error type 13 at Line 205: Illegal use of ".". 
+Error type 13 at Line 205: Illegal use of ".". 
+Error type 13 at Line 205: Illegal use of ".". 
+Error type 13 at Line 205: Illegal use of ".". 
+Error type 13 at Line 205: Illegal use of ".". 
+Error type 13 at Line 205: Illegal use of ".". 
+Error type 13 at Line 205: Illegal use of ".". 
+Error type 13 at Line 205: Illegal use of ".". 
+Error type 13 at Line 205: Illegal use of ".". 
+Error type 13 at Line 205: Illegal use of ".". 
+Error type 13 at Line 205: Illegal use of ".". 
+Error type 14 at Line 206: There is no dominant name "q". 
+Error type 13 at Line 206: Illegal use of ".". 
+Error type 13 at Line 206: Illegal use of ".". 
+Error type 13 at Line 206: Illegal use of ".". 
+Error type 13 at Line 206: Illegal use of ".". 
+Error type 13 at Line 206: Illegal use of ".". 
+Error type 13 at Line 206: Illegal use of ".". 
+Error type 13 at Line 206: Illegal use of ".". 
+Error type 13 at Line 206: Illegal use of ".". 
+Error type 13 at Line 206: Illegal use of ".". 
+Error type 13 at Line 206: Illegal use of ".". 
+Error type 14 at Line 207: There is no dominant name "r". 
+Error type 13 at Line 207: Illegal use of ".". 
+Error type 13 at Line 207: Illegal use of ".". 
+Error type 13 at Line 207: Illegal use of ".". 
+Error type 13 at Line 207: Illegal use of ".". 
+Error type 13 at Line 207: Illegal use of ".". 
+Error type 13 at Line 207: Illegal use of ".". 
+Error type 13 at Line 207: Illegal use of ".". 
+Error type 13 at Line 207: Illegal use of ".". 
+Error type 13 at Line 207: Illegal use of ".". 
+Error type 14 at Line 208: There is no dominant name "s". 
+Error type 13 at Line 208: Illegal use of ".". 
+Error type 13 at Line 208: Illegal use of ".". 
+Error type 13 at Line 208: Illegal use of ".". 
+Error type 13 at Line 208: Illegal use of ".". 
+Error type 13 at Line 208: Illegal use of ".". 
+Error type 13 at Line 208: Illegal use of ".". 
+Error type 13 at Line 208: Illegal use of ".". 
+Error type 13 at Line 208: Illegal use of ".". 
+Error type 14 at Line 209: There is no dominant name "t". 
+Error type 13 at Line 209: Illegal use of ".". 
+Error type 13 at Line 209: Illegal use of ".". 
+Error type 13 at Line 209: Illegal use of ".". 
+Error type 13 at Line 209: Illegal use of ".". 
+Error type 13 at Line 209: Illegal use of ".". 
+Error type 13 at Line 209: Illegal use of ".". 
+Error type 13 at Line 209: Illegal use of ".". 
+Error type 14 at Line 210: There is no dominant name "u". 
+Error type 13 at Line 210: Illegal use of ".". 
+Error type 13 at Line 210: Illegal use of ".". 
+Error type 13 at Line 210: Illegal use of ".". 
+Error type 13 at Line 210: Illegal use of ".". 
+Error type 13 at Line 210: Illegal use of ".". 
+Error type 13 at Line 210: Illegal use of ".". 
+Error type 14 at Line 212: There is no dominant name "v". 
+Error type 13 at Line 212: Illegal use of ".". 
+Error type 13 at Line 212: Illegal use of ".". 
+Error type 13 at Line 212: Illegal use of ".". 
+Error type 13 at Line 212: Illegal use of ".". 
+Error type 13 at Line 212: Illegal use of ".". 
+Error type 14 at Line 213: There is no dominant name "w". 
+Error type 13 at Line 213: Illegal use of ".". 
+Error type 13 at Line 213: Illegal use of ".". 
+Error type 13 at Line 213: Illegal use of ".". 
+Error type 13 at Line 213: Illegal use of ".". 
+Error type 14 at Line 214: There is no dominant name "x". 
+Error type 13 at Line 214: Illegal use of ".". 
+Error type 13 at Line 214: Illegal use of ".". 
+Error type 13 at Line 214: Illegal use of ".". 
+Error type 14 at Line 215: There is no dominant name "y". 
+Error type 13 at Line 215: Illegal use of ".". 
+Error type 13 at Line 215: Illegal use of ".". 
+Error type 14 at Line 216: There is no dominant name "z". 
+Error type 13 at Line 216: Illegal use of ".". 
+Error type 14 at Line 217: There is no dominant name "finale". 
+Error type 5 at Line 222: Type mismatched for assignment. 
+Error type 5 at Line 223: Type mismatched for assignment. 
+Error type 8 at Line 225: Type mismatched for return. 

@@ -119,6 +119,7 @@ struct FieldList {
 struct StructName {
   // 结构体有自己的符号表
   Symtab* this_symtab;
+  enum { ST_UNDEFINED, ST_DEFINED } stdec_kind;
 };
 
 // 函数名

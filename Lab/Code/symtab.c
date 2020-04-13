@@ -106,6 +106,10 @@ int Insert_Symtab(Symbol* sb) {
       if (other->skind != S_VARIABLE)
         return semantic_error(local->hor ? 15 : 3, sb->dec_lineno, sb->sbname);
     }
+    // 之前所有的重名检测都通过, 插入局部表
+    local->syms[local->symcnt++] = sb;
+    return 0;
+
   } else if (sb->skind == S_FUNCTIONNAME) {
     if (other = Query_Symtab(sb->sbname)) {
       // 全局作用域, 查找冲突声明或定义
@@ -126,16 +130,27 @@ int Insert_Symtab(Symbol* sb) {
         else
           return 0;
       }
-      assert(0);
     }
+    // 之前所有的重名检测都通过, 插入局部表
+    local->syms[local->symcnt++] = sb;
+    return 0;
+
   } else if (sb->skind == S_STRUCTNAME) {
     if (other = Query_Symtab(sb->sbname))
       // 结构体重定义: 16
       return semantic_error(16, sb->dec_lineno, sb->sbname);
+
+    // 之前所有的重名检测都通过, 插入函数栈帧上的表
+    Symtab* st = local;
+    while (st->hor_last_symtab) st = st->hor_last_symtab;
+    st->syms[st->symcnt++] = sb;
+    /*
+    // 之前所有的重名检测都通过, 插入局部表
+    // local->syms[local->symcnt++] = sb;
+    */
+    return 0;
   }
-  // 之前所有的重名检测都通过, 插入
-  local->syms[local->symcnt++] = sb;
-  return 0;
+  assert(0);
 }
 
 Symbol* Query_Symtab(char* sbname) {
@@ -224,4 +239,7 @@ Type* BuildStructure(Symtab* st, char* stname) {
   return type;
 }
 
-int Symtab_mode() { return local->hor; }
+int Symtab_mode() {
+  // 根据当前符号表的水平坐标确定模式
+  return local->hor;
+}
