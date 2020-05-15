@@ -31,11 +31,11 @@ struct ast* newnode(char* name, int num, ...) {
   node->name = name;
   node->num = num;
 
-  if (strcmp(name, "ID") == 0 || strcmp(name, "TYPE") == 0)
+  if (!strcmp(name, "ID") || !strcmp(name, "TYPE") || !strcmp(name, "RELOP"))
     strcpy(node->id_name, yytext);
-  else if (strcmp(name, "INT") == 0) {
+  else if (!strcmp(name, "INT")) {
     node->int_value = strtol(yytext, NULL, 0);
-  } else if (strcmp(name, "FLOAT") == 0)
+  } else if (!strcmp(name, "FLOAT"))
     node->float_value = atof(yytext);
 
   if (num > 0) {

@@ -5,8 +5,6 @@
 #include "stdlib.h"
 #include "string.h"
 
-int semantic_error(int error_type, int lineno, char* msg);
-
 #define SYMTAB_SIZE 0x3FFF
 
 Symtab* global;  // 全局符号表
@@ -50,15 +48,7 @@ static Symtab* Symtab_Create(int h, int v, Symtab* hor, Symtab* ver) {
   ret->vert_last_symtab = ver;
 }
 
-static void* Symtab_Drop(Symtab* st) {
-  for (int i = 0; i < st->symcnt; i++) {
-    Symbol* sb = st->syms[i];
-    if (sb->skind == S_FUNCTIONNAME) {
-      if (sb->pfunc->fdec_kind != F_DEFINITION)
-        semantic_error(18, sb->dec_lineno, sb->sbname);
-    }
-  }
-}
+static void* Symtab_Drop(Symtab* st) {}
 
 int ver = 0;
 
@@ -100,11 +90,10 @@ int Insert_Symtab(Symbol* sb) {
     // 普通变量重定义: 3, 域变量重定义: 15
     if (other = Query_At_Symtab(sb->sbname, local))
       // 局部作用域, 任意符号都算重名
-      return semantic_error(local->hor ? 15 : 3, sb->dec_lineno, sb->sbname);
+      return local->hor ? 15 : 3;
     else if (other = Query_Symtab(sb->sbname)) {
       // 全局作用域, 同名变量不算重名
-      if (other->skind != S_VARIABLE)
-        return semantic_error(local->hor ? 15 : 3, sb->dec_lineno, sb->sbname);
+      if (other->skind != S_VARIABLE) return local->hor ? 15 : 3;
     }
     // 之前所有的重名检测都通过, 插入局部表
     local->syms[local->symcnt++] = sb;
@@ -117,7 +106,7 @@ int Insert_Symtab(Symbol* sb) {
       if (sb->pfunc->fdec_kind == F_DEFINITION &&
           other->pfunc->fdec_kind == F_DEFINITION)
         // 函数重定义: 4
-        return semantic_error(4, sb->dec_lineno, sb->sbname);
+        return 4;
       else {
         // 双声明或者定义和声明
         int eq = function_equal(sb->pfunc, other->pfunc);
@@ -126,7 +115,7 @@ int Insert_Symtab(Symbol* sb) {
           other->pfunc = sb->pfunc;
         // 冲突: 19
         if (!eq)
-          return semantic_error(19, sb->dec_lineno, sb->sbname);
+          return 19;
         else
           return 0;
       }
@@ -138,7 +127,7 @@ int Insert_Symtab(Symbol* sb) {
   } else if (sb->skind == S_STRUCTNAME) {
     if (other = Query_Symtab(sb->sbname))
       // 结构体重定义: 16
-      return semantic_error(16, sb->dec_lineno, sb->sbname);
+      return 16;
 
     // 之前所有的重名检测都通过, 插入函数栈帧上的表
     Symtab* st = local;
@@ -228,6 +217,16 @@ void StructSpecifierRC() {
   local = local->hor_last_symtab;
 }
 
+int BuildBiasFromFieldList(FieldList* fl) {
+  int bias = 0;
+  while (fl) {
+    fl->bias = bias;
+    bias += fl->sym->pvar->vtype->type_size;
+    fl = fl->next;
+  }
+  return bias;
+}
+
 Type* BuildStructure(Symtab* st, char* stname) {
   assert(st->hor);
   Type* type = malloc(sizeof(Type));
@@ -236,6 +235,7 @@ Type* BuildStructure(Symtab* st, char* stname) {
   // strcpy(type->tname, stname);
   type->field = BuildFieldListFromSymtab(st);
   type->left_val = 1;
+  type->type_size = BuildBiasFromFieldList(type->field);
   return type;
 }
 

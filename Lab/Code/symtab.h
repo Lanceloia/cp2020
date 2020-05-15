@@ -101,17 +101,23 @@ struct Type {
     FieldList* field;
   };
   int left_val;
+  int type_size;
   // char tname[MAX_NAME_LEN];
 };
 
 //变量
 struct Var {
   const Type* vtype;
+  // 变量被定义时分配的内存名vname
+  int vname;
+  // 是否为形参
+  int isParam;
 };
 
 // 域
 struct FieldList {
   Symbol* sym;
+  int bias;
   FieldList* next;
 };
 
